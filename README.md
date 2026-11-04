@@ -1,2 +1,2 @@
-# andrewsolberg.github.io
+# Andrew Solberg
 Personal GitHub Website
