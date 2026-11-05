@@ -15,11 +15,13 @@
 .comparison-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.plot-regression{stroke:#b66e31;stroke-width:2;stroke-dasharray:7 5;fill:none;pointer-events:none}.material-dialog{width:min(900px,calc(100vw - 30px));max-height:94vh;overflow:auto}.material-columns{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}.material-columns section{border:1px solid var(--line);border-radius:9px;padding:15px;min-width:0}.material-columns h3{margin:0 0 8px}.material-columns p{font-size:11px}.material-columns input[type=password]{padding:7px;border:1px solid var(--line);border-radius:6px;margin-bottom:10px}.material-choice{display:flex;gap:8px;align-items:center;font-size:12px;font-weight:400}.material-choice input{width:auto;flex:none}.material-choice small{font-size:10px;color:var(--muted)}.material-field{border-top:1px solid var(--line);padding:8px 0}.material-field label{margin:5px 0}.material-field details{font-size:11px}.material-field textarea{min-height:140px;max-height:300px;width:100%;font-size:12px}.material-field summary{cursor:pointer;color:var(--purple)}.material-sources{display:flex;gap:8px;font-size:11px;margin:10px 0}.material-sources a{color:var(--purple)}@media(max-width:650px){.material-columns{grid-template-columns:1fr}.material-dialog{padding:20px}.material-choice{flex-wrap:wrap}.comparison-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 .danger{color:#a33944;border-color:#dfc4c7}.danger:hover:not(:disabled){background:#fff0f1;border-color:#c1828a;color:#8a2632}.danger-primary{background:#ab3543;color:white;border-color:#ab3543}.danger-primary:hover:not(:disabled){background:#8e2935;border-color:#8e2935}.delete-dialog{width:min(520px,calc(100vw - 30px))}.delete-dialog p{font-size:13px;overflow-wrap:anywhere}.book-actions{text-align:right;white-space:nowrap}.book-actions button{font-size:11px;padding:4px 8px}
+
+.chapter-dropdown{margin-top:8px;font-size:11px;min-width:220px;max-width:430px}.chapter-dropdown>summary{cursor:pointer;color:var(--purple);font-weight:600;padding:4px 0}.chapter-list{list-style:none;margin:5px 0 0;padding:0;border:1px solid var(--line);border-radius:7px;background:#fff;max-height:350px;overflow:auto}.chapter-list>li+li{border-top:1px solid var(--line)}.chapter-entry{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;border:0;border-radius:0;padding:9px;font-size:11px;font-weight:400;white-space:normal}.chapter-entry strong{display:block;font-weight:600;line-height:1.35}.chapter-entry small{display:block;color:var(--muted);margin-top:3px}.chapter-entry.selected{background:var(--pale)}.chapter-score{color:var(--purple);font-variant-numeric:tabular-nums;flex-shrink:0}.source-options{border:1px solid var(--line);border-radius:7px;margin:12px 0;padding:8px 12px}.source-options legend{font-size:11px;color:var(--muted);padding:0 4px}.source-options .material-choice{margin:7px 0}.source-credentials{border-top:1px solid var(--line);padding-top:10px;margin:10px 0}.source-credentials>summary{cursor:pointer;color:var(--purple);font-size:12px}.source-credentials label:not(.material-choice){font-size:11px}.source-credentials input[type=password]{width:100%}.material-sources{flex-wrap:wrap}.material-field ol{padding-left:22px}.material-field li{margin:8px 0}#chapter-dialog textarea{min-height:90px}#chapter-dialog{max-height:94vh;overflow:auto}.detail-top>[data-parent-book]{max-width:100%;overflow-wrap:anywhere;text-align:left}
 </style></head>
 <body>
 <header><div class="brand"><div class="mark"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4.5c3-1 6-.5 9 1.5 3-2 6-2.5 9-1.5v15c-3-1-6-.5-9 1.5-3-2-6-2.5-9-1.5zM12 6v15"/></svg></div><div><div class="brand-title">Library Search</div><div class="brand-sub">A personal index of ideas</div></div></div><div class="toolbar"><span class="local">On your device</span><button id="pdf-btn" class="small">Add PDF / metadata</button><button id="isbn-btn" class="small">Add ISBNs</button><button id="import-btn" class="small">Import catalog</button><button id="backup-btn" class="small">Export data</button><button id="save-applet-btn" class="small save-applet">Save applet</button><button id="help-btn" class="small" aria-label="Help and methodology">?</button></div></header>
 <div class="layout"><aside class="sidebar">
- <div class="side-block catalog-stat"><div class="eyebrow">Your library</div><div class="count" id="book-count">0</div><div class="subcount">books, connected by ideas</div><div class="coverage-grid" id="total-coverage"></div><div class="subcount" id="coverage-caption"></div></div>
+ <div class="side-block catalog-stat"><div class="eyebrow">Your library</div><div class="count" id="book-count">0</div><div class="subcount">books, connected by ideas</div><div class="subcount" id="chapter-count">0 chapters indexed separately</div><div class="coverage-grid" id="total-coverage"></div><div class="subcount" id="coverage-caption"></div></div>
  <div class="side-block"><div class="side-title"><span class="eyebrow">Organization</span><button id="category-add" class="small quiet" aria-label="Create category">+</button></div><button id="all-books" class="side-item active">All books</button><div id="categories"></div><p class="muted" style="font-size:11px;margin:12px 10px 0">Save a topic as a category. Assign books as you explore.</p></div>
  <div class="side-foot" id="source-caption"></div>
 </aside><main>
@@ -29,26 +31,27 @@
  <section id="ranking-search" class="search-box" aria-label="Semantic search"><div class="query-row"><svg class="query-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><label class="offscreen" for="query">Research topic or question</label><textarea id="query" rows="1" placeholder="Describe a topic or research question"></textarea><button id="search-btn" class="primary">Search library</button></div></section>
  <div class="model-bar" aria-live="polite"><div class="model-status"><strong id="status-title">Add books to get started.</strong><span id="status-description">First run downloads a ~34 MB model. Your book text stays on this device.</span><progress id="progress" max="100" value="0" hidden></progress></div><button id="build-btn" class="primary small">Build embeddings</button><button id="pause-btn" class="small" hidden>Pause</button></div>
  <div id="notice" class="notice" role="status" hidden></div>
- <div class="results-tools"><div class="results-title" id="results-heading">All books <small>Catalog order · not ranked</small></div><div class="filters"><label class="offscreen" for="score-scale">Score scale</label><select id="score-scale"><option value="relative">Relative similarity</option><option value="raw">Raw similarity</option></select><label class="offscreen" for="filter">Filter titles or authors</label><input id="filter" type="search" placeholder="Filter title or author"><label class="checkbox-label" id="assigned-wrap" hidden><input id="assigned-only" type="checkbox">Assigned only</label><button id="csv-btn" class="small" disabled>Export ranking</button><button id="delete-all-btn" class="small danger" disabled>Delete All</button></div></div>
+ <div class="results-tools"><div class="results-title" id="results-heading">All books <small>Catalog order · not ranked</small></div><div class="filters"><label class="offscreen" for="score-scale">Score scale</label><select id="score-scale"><option value="relative">Relative similarity</option><option value="raw">Raw similarity</option></select><label class="offscreen" for="filter">Filter titles or authors</label><input id="filter" type="search" placeholder="Filter book, chapter or author"><label class="checkbox-label" id="assigned-wrap" hidden><input id="assigned-only" type="checkbox">Assigned only</label><button id="csv-btn" class="small" disabled>Export ranking</button><button id="delete-all-btn" class="small danger" disabled>Delete All</button></div></div>
  <div class="workspace"><section id="ranking-panel" class="results-card" aria-label="Book rankings"><div class="table-scroll" id="table-scroll"><table><thead id="table-head"></thead><tbody id="results"></tbody></table></div><div class="table-foot"><span id="result-count"></span><span id="score-caption">Relative similarity · all records retained</span></div></section><section id="comparison-panel" class="results-card comparison-panel" aria-label="Two-query scatter plot" hidden><div class="plot-heading"><div><strong>Two-query similarity</strong><div class="muted">Hover or select a book to inspect its scores.</div></div><button class="small" data-composite aria-haspopup="dialog" aria-controls="composite-popover" aria-expanded="false">Composite ▾</button></div><div id="comparison-metrics" class="comparison-metrics" aria-live="polite"></div><div id="plot" class="plot"><div class="empty-state">Enter two queries above, then compare them.</div></div><div class="plot-note" id="plot-count"></div><p class="plot-note" id="scale-note">Relative scores use the full catalog: lowest = 0, highest = 1. Missing scores are excluded. Correlation and slope use relative composite scores.</p></section><aside class="details" id="details" aria-label="Selected book"></aside></div>
  <footer><span>Composite = weighted mean of raw field scores, then rescaled when relative similarity is selected.</span><span>Missing fields remain empty</span></footer>
 </main></div>
 <input id="file-input" type="file" accept=".json,.tsv,.csv,.xlsx,.xls" hidden>
 <dialog id="category-dialog"><form id="category-form"><div class="eyebrow">Your organization schema</div><h2>Create a category</h2><p class="muted">Save a topic description and field weights together.</p><label for="category-name">Category name</label><input id="category-name" type="text" maxlength="100" required placeholder="Category name"><label for="category-query">Topic description</label><textarea id="category-query" required placeholder="Describe this category"></textarea><div class="actions"><button type="button" data-close="category-dialog">Cancel</button><button type="submit" class="primary">Save category</button></div></form></dialog>
 <dialog id="edit-dialog"><form id="edit-form"><div class="eyebrow" id="edit-book-title"></div><h2>Edit book information</h2><label for="edit-field">Field</label><select id="edit-field"></select><label for="edit-text">Text to index</label><textarea id="edit-text" style="min-height:230px"></textarea><p class="muted" style="font-size:11px;margin-top:8px">Saving clears this field's old embedding. Build embeddings again to index the new text. Blank text keeps its vector empty.</p><div class="actions"><button type="button" data-close="edit-dialog">Cancel</button><button type="submit" class="primary">Save field</button></div></form></dialog>
-<dialog id="help-dialog"><div class="eyebrow">How this applet works</div><h2>A searchable index you can inspect</h2><div class="help-content"><p>Start with your own books: import a catalog, enter ISBNs, or add a PDF. Build embeddings, then search for a topic. Select a book to inspect its field scores and saved text.</p><h3>Search fields</h3><p>The available fields are title, summary, contents, index, subjects, and full text. Missing text stays empty and does not count as zero similarity.</p><p id="help-coverage"></p><p>Catalog imports recognize descriptive summaries and preserve bibliographic citations separately. A generated catalog citation is excluded from summary embeddings.</p><h3>Similarity scores</h3><p><a href="https://huggingface.co/intfloat/e5-small-v2" target="_blank" rel="noreferrer">E5 small v2</a> produces normalized 384-dimensional vectors. Each field is split into text blocks; its vector is their normalized mean. A field score is the query's dot product with that vector. Composite is the weighted mean of available field scores. Set a field's weight to zero to exclude it.</p><p>The model is designed for English. Similarity is not a probability or an absolute relevance percentage. Review your rankings and the information available for each book.</p><h3>Relative and raw similarity</h3><p>Relative similarity is the default. For each query, the lowest scored book in the full catalog maps to 0 and the highest to 1. Identical scores map to 0.5; missing scores remain empty. Each field column is scaled independently. Composite is calculated from raw scores before scaling. Title/author and assignment filters do not change these reference ranges. A highest relative score does not guarantee that a book is relevant.</p><p>Switch to Raw similarity to see the underlying dot products. Click a ranking column once to sort descending and again to sort ascending. Missing values stay last. Hover or focus a Composite score or heading to edit field weights; use its dropdown button on touch screens.</p><h3>Two-query plot and regression</h3><p>Enter independent X and Y queries. Each book is plotted at its composite similarity to each query. Axes stay fixed at 0–1. In raw mode, negative scores appear at zero, while regression uses their unclipped values.</p><p>Embedding cosine compares the two query vectors. The regression fits Y = slope × X + intercept to paired book scores currently shown. <strong>The slope, intercept, R², and dashed line follow the selected raw or relative scale.</strong> A fit needs at least two paired books and variation in X. R² is undefined if Y has no variation.</p><h3>PDFs and metadata</h3><p>Use Add PDF / metadata or a book's Add source button. Local PDF extraction offers document title, explicit summary/abstract, contents, index, and full text when found. Optional English OCR can read scanned pages. Review and edit proposed fields before applying them. Your PDF stays on your device; runtime and OCR files download on first use.</p><p>Open Library ISBN imports and the Internet Archive/Google Books lookup can fill available metadata. Lookups verify ISBN matches. Existing text is retained unless you select a replacement. Public Archive OCR text is optional; restricted files are skipped. Google Books requires an API key, used for the current dialog session and excluded from backups.</p><p>Build embeddings again after adding or editing text. Indexing works in bounded batches; pause and resume to continue later. Completed text blocks are retained.</p><h3>Saving and importing</h3><p>The browser stores your catalog and embeddings locally when storage is available. Export data downloads a JSON backup. Save applet downloads an HTML copy containing your current catalog and embeddings. Share a fresh empty copy when you want others to start with their own books.</p><p>Import TSV, CSV, Excel, or a JSON backup. Catalog imports merge by Book Id and preserve manual fields and unchanged embeddings. JSON backups restore saved state using the current fields. The app does not poll LibraryThing.</p><h3>Deleting data</h3><p>Use Delete on a book's row or Delete book in its details. Confirmation removes the book, its embeddings, category assignments, and unshared cached ISBN lookup data. Rankings and the plot update immediately.</p><p>Delete All clears this browser's Library Search catalog, embeddings, categories, lookup history, and saved queries after confirmation. An empty saved state prevents books embedded in an older HTML copy from reappearing on reload. Downloaded HTML files, backups, and original PDFs remain on disk. Save applet after deletion if you want an updated HTML copy.</p><h3>Local computation</h3><p>Book text and queries are embedded inside the browser. Runtime/model files download from jsDelivr and Hugging Face. Excel imports load SheetJS; PDF import loads PDF.js and optional Tesseract OCR. Only selected ISBNs are sent to metadata repositories. Browser storage and caching depend on your browser.</p><p>If local file restrictions block downloads, serve the folder with <code>python -m http.server 8765 --bind 127.0.0.1</code> and open <code>http://127.0.0.1:8765/library_semantic_search.html</code>.</p><h3>Your data sources</h3><p id="help-source"></p></div><div class="actions"><button data-close="help-dialog" class="primary">Close</button></div></dialog>
-<dialog id="isbn-dialog" class="isbn-dialog"><div class="eyebrow">Add and enrich books</div><h2>Look up books by ISBN</h2><p class="muted">Paste ISBN-10 or ISBN-13 values, one per line or separated by commas. Open Library metadata fills empty fields; existing text is preserved.</p><label for="isbn-input">ISBN list</label><textarea id="isbn-input" rows="6" placeholder="Paste ISBN-10 or ISBN-13 values" style="width:100%;min-height:140px"></textarea><div class="isbn-actions"><button id="isbn-load-list" class="small">Load list file</button><button id="isbn-use-catalog" class="small">Use catalog ISBNs</button><label class="checkbox-label" style="margin:0;font-weight:400"><input id="isbn-refresh" type="checkbox" style="width:auto">Refresh cached lookups</label></div><input id="isbn-file" type="file" accept=".txt,.csv,.tsv" hidden><div id="isbn-validation" aria-live="polite"></div><p class="muted" style="font-size:11px">The selected ISBNs are sent to Open Library. Available titles, summaries, contents, and subject headings are saved locally. Missing fields stay empty.</p><progress id="isbn-progress" max="100" value="0" hidden></progress><div class="isbn-report" id="isbn-report-wrap" hidden><table><thead><tr><th>ISBN-13</th><th>Result</th><th>Fields added</th></tr></thead><tbody id="isbn-report"></tbody></table></div><div class="actions"><button id="isbn-stop" hidden>Stop lookup</button><button data-close="isbn-dialog">Close</button><button id="isbn-fetch" class="primary">Look up ISBNs</button></div></dialog>
-<dialog id="material-dialog" class="material-dialog"><div class="eyebrow">Add source material</div><h2>PDF text and repository metadata</h2><label for="material-book">Save to book</label><select id="material-book"></select><div class="material-columns"><section><h3>Import a PDF</h3><p class="muted">Text extraction and optional English OCR run on this device. The PDF is not uploaded. Review fields before applying.</p><input id="material-file" type="file" accept=".pdf,application/pdf"><label class="material-choice"><input id="material-ocr" type="checkbox">Use OCR for scanned pages (slower)</label><label for="material-password">PDF password, if needed</label><input id="material-password" type="password" autocomplete="off"><button id="material-read" class="small">Parse PDF</button></section><section><h3>Look up public metadata</h3><label for="material-isbn">ISBN-10 / ISBN-13</label><input id="material-isbn" type="text"><label class="material-choice"><input id="material-archive" type="checkbox" checked>Internet Archive</label><label class="material-choice"><input id="material-archive-text" type="checkbox">Also import public Archive OCR text</label><label class="material-choice"><input id="material-google" type="checkbox">Google Books</label><label for="material-key">Google Books API key</label><input id="material-key" type="password" autocomplete="off" placeholder="Used only for this session"><p class="field-state">Selected ISBNs go to the selected repositories. Restricted Archive text is skipped. Google Books requires your API key, which is excluded from backups.</p><button id="material-lookup" class="small">Find metadata</button></section></div><progress id="material-progress" max="100" value="0" hidden></progress><div id="material-status" class="notice" role="status" hidden></div><div id="material-sources" class="material-sources"></div><div id="material-review"></div><div class="actions"><button id="material-stop" hidden>Stop</button><button data-close="material-dialog">Close</button><button id="material-apply" class="primary" disabled>Apply selected fields</button></div></dialog>
+<dialog id="help-dialog"><div class="eyebrow">How this applet works</div><h2>A searchable index you can inspect</h2><div class="help-content"><p>Import a catalog, enter ISBNs, or add a PDF. Build embeddings, then search for a topic. Select a book or expand its chapter list to inspect individual chapter scores and text.</p><h3>Search fields</h3><p>The fields are title, summary and contents, bibliography, index, subjects, and full text. Summary and table of contents form one text field with one joint embedding. Bibliography embeds the actual list of cited sources. A catalog note such as “includes bibliographical references” is not a citation list.</p><p id="help-coverage"></p><p>Older saved catalogs migrate contents into summary automatically. Changed summaries need indexing again; unchanged field embeddings are retained. Imports recognize descriptive summaries and preserve catalog citations separately.</p><h3>Chapters and edited volumes</h3><p>PDF outlines or detected chapter headings, catalog contents, and repository chapter records create nested chapter entries. Chapter titles alone can be indexed when no abstract or text is available. Known chapter authors, summaries, reference lists, and text are stored on each chapter. Select a chapter from the dropdown beneath its book, or use Add chapter to enter one manually. Chapters receive independent field embeddings and similarity scores and appear in comparison plots and CSV exports. Relative scores are scaled across all book and chapter entries.</p><h3>Similarity scores</h3><p><a href="https://huggingface.co/intfloat/e5-small-v2" target="_blank" rel="noreferrer">E5 small v2</a> produces normalized 384-dimensional vectors locally. Each field is split into text blocks; its vector is their normalized mean. A score is the query’s dot product with that vector. Composite is the weighted mean of available field scores. Set a field weight to zero to exclude it. Missing fields are excluded.</p><p>The model is designed for English. Similarity is not a probability. Relative similarity maps the catalog’s lowest score to 0 and highest to 1; tied scores map to 0.5. Each field scales independently, after the raw composite is calculated. Filters retain the catalog-wide ranges. Raw similarity shows the underlying dot products. Click headings to sort; use the Composite dropdown to change weights.</p><h3>Two-query plot</h3><p>Enter independent X and Y queries. Every book and chapter with paired composite scores is plotted. Query cosine compares the query vectors. The dashed regression line fits the entries currently shown using the selected raw or relative scale. A fit needs two paired entries and variation in X. Raw negative scores display at zero while regression uses their unclipped values.</p><h3>Metadata pipeline</h3><p>Add ISBNs queries Open Library and optionally the additional sources selected in Add PDF / metadata: Library of Congress, HathiTrust, Crossref, OAPEN, DOAB, BnF, Internet Archive, Google Books, WorldCat, DPLA, and Europeana. Lookups verify ISBN matches. Public catalog records can add subjects, summaries, contents, and chapter titles; actual cited sources are imported when supplied, including Crossref references.</p><p>Google Books, DPLA, and Europeana need API keys; WorldCat needs an eligible institutional subscription and an OAuth access token. Credentials stay in the current page session and are excluded from backups and saved applets. Per-source errors are reported while successful results remain available. Browser cross-origin restrictions can prevent a source from responding directly.</p><h3>PDFs and review</h3><p>PDF extraction and optional English OCR run on this device. Explicit abstract/summary sections and contents become the joint summary field. Bibliography, references, or works-cited sections supply cited-source text. Chapter page ranges are inferred from outlines or headings; review proposed chapters and fields before applying. Public Archive OCR text is optional; restricted files are skipped.</p><p>Rebuild embeddings after adding or editing text. Indexing works in bounded batches and retains completed blocks when paused.</p><h3>Saving and importing</h3><p>The browser saves your catalog and embeddings locally when storage is available. Export data creates a JSON backup. Save applet creates an HTML copy containing the catalog, chapters, and embeddings. Share a fresh empty copy when others should start their own library.</p><p>Import TSV, CSV, Excel, or JSON. Table imports need Book Id and Title; Bibliography, References, Cited Sources, and Works Cited columns are recognized. Contents is accepted on import and folded into summary. A JSON Chapters array can supply chapter metadata and text. Imports merge by Book Id, retain manual fields and unchanged embeddings, and preserve nested chapters. The app does not poll LibraryThing.</p><h3>Deleting and privacy</h3><p>Delete on a book removes it and its chapters after confirmation. Delete chapter removes only that chapter. Delete All clears this browser’s catalog, embeddings, categories, lookups, and saved queries. Downloaded applets, backups, and original PDFs remain on disk.</p><p>Book text, PDFs, and queries are processed locally. Runtime/model files download from jsDelivr and Hugging Face; Excel imports load SheetJS; PDF import loads PDF.js and optional Tesseract OCR. Enabled repositories receive selected ISBNs and the credentials required for their APIs.</p><p>If local file restrictions block downloads, serve the folder with <code>python -m http.server 8765 --bind 127.0.0.1</code> and open <code>http://127.0.0.1:8765/library_semantic_search.html</code>.</p><h3>Your data sources</h3><p id="help-source"></p></div><div class="actions"><button data-close="help-dialog" class="primary">Close</button></div></dialog>
+<dialog id="isbn-dialog" class="isbn-dialog"><div class="eyebrow">Add and enrich books</div><h2>Look up books by ISBN</h2><p class="muted">Paste ISBN-10 or ISBN-13 values, one per line or separated by commas. Open Library and your selected additional sources fill empty fields and add chapters. Existing text is preserved.</p><label for="isbn-input">ISBN list</label><textarea id="isbn-input" rows="6" placeholder="Paste ISBN-10 or ISBN-13 values" style="width:100%;min-height:140px"></textarea><div class="isbn-actions"><button id="isbn-load-list" class="small">Load list file</button><button id="isbn-use-catalog" class="small">Use catalog ISBNs</button><label class="checkbox-label" style="margin:0;font-weight:400"><input id="isbn-refresh" type="checkbox" style="width:auto">Refresh cached lookups</label></div><div class="isbn-actions"><label class="checkbox-label"><input id="isbn-enrich" type="checkbox" checked>Also query selected additional sources</label><button id="isbn-source-settings" class="small">Choose additional sources</button></div><p class="field-state">Additional sources use the selections and session credentials in Add PDF / metadata. Lookups may take longer across several repositories.</p><input id="isbn-file" type="file" accept=".txt,.csv,.tsv" hidden><div id="isbn-validation" aria-live="polite"></div><p class="muted" style="font-size:11px">The selected ISBNs are sent to Open Library and any enabled additional sources. Available summaries with contents, cited-source lists, subjects, and chapters are saved locally. Missing fields stay empty.</p><progress id="isbn-progress" max="100" value="0" hidden></progress><div class="isbn-report" id="isbn-report-wrap" hidden><table><thead><tr><th>ISBN-13</th><th>Result</th><th>Fields added</th></tr></thead><tbody id="isbn-report"></tbody></table></div><div class="actions"><button id="isbn-stop" hidden>Stop lookup</button><button data-close="isbn-dialog">Close</button><button id="isbn-fetch" class="primary">Look up ISBNs</button></div></dialog>
+<dialog id="material-dialog" class="material-dialog"><div class="eyebrow">Add source material</div><h2>PDF text and repository metadata</h2><label for="material-book">Save to book or chapter</label><select id="material-book"></select><div class="material-columns"><section><h3>Import a PDF</h3><p class="muted">Text extraction and optional English OCR run on this device. Review combined summary and contents, bibliography, and chapter entries before applying.</p><input id="material-file" type="file" accept=".pdf,application/pdf"><label class="material-choice"><input id="material-ocr" type="checkbox">Use OCR for scanned pages (slower)</label><label for="material-password">PDF password, if needed</label><input id="material-password" type="password" autocomplete="off"><button id="material-read" class="small">Parse PDF</button></section><section><h3>Look up book data</h3><label for="material-isbn">ISBN-10 / ISBN-13</label><input id="material-isbn" type="text"><fieldset class="source-options"><legend>Public sources</legend><label class="material-choice"><input id="material-archive" type="checkbox" checked>Internet Archive</label><label class="material-choice"><input id="material-loc" type="checkbox" checked>Library of Congress</label><label class="material-choice"><input id="material-hathi" type="checkbox" checked>HathiTrust</label><label class="material-choice"><input id="material-crossref" type="checkbox" checked>Crossref</label><label class="material-choice"><input id="material-oapen" type="checkbox" checked>OAPEN</label><label class="material-choice"><input id="material-doab" type="checkbox" checked>Directory of Open Access Books</label><label class="material-choice"><input id="material-bnf" type="checkbox" checked>Bibliothèque nationale de France</label></fieldset><label class="material-choice"><input id="material-archive-text" type="checkbox">Also import public Archive OCR text</label><details class="source-credentials"><summary>Sources requiring credentials</summary><label class="material-choice"><input id="material-google" type="checkbox">Google Books</label><label for="material-key">Google Books API key</label><input id="material-key" type="password" autocomplete="off"><label class="material-choice"><input id="material-dpla" type="checkbox">Digital Public Library of America</label><label for="material-dpla-key">DPLA API key</label><input id="material-dpla-key" type="password" autocomplete="off"><label class="material-choice"><input id="material-europeana" type="checkbox">Europeana</label><label for="material-europeana-key">Europeana API key</label><input id="material-europeana-key" type="password" autocomplete="off"><label class="material-choice"><input id="material-worldcat" type="checkbox">WorldCat (institutional access)</label><label for="material-worldcat-token">WorldCat OAuth access token</label><input id="material-worldcat-token" type="password" autocomplete="off"><p class="field-state">WorldCat requires an eligible library subscription and a current access token.</p></details><p class="field-state">Credentials stay in this page session and are excluded from saved data. Selected ISBNs go to enabled sources. Availability, browser access, and book-text rights vary by repository.</p><button id="material-lookup" class="small">Find metadata</button></section></div><progress id="material-progress" max="100" value="0" hidden></progress><div id="material-status" class="notice" role="status" hidden></div><div id="material-sources" class="material-sources"></div><div id="material-review"></div><div class="actions"><button id="material-stop" hidden>Stop</button><button data-close="material-dialog">Close</button><button id="material-apply" class="primary" disabled>Apply selected fields</button></div></dialog>
+<dialog id="chapter-dialog"><form id="chapter-form"><div class="eyebrow">Chapter entry</div><h2>Add a chapter</h2><input id="chapter-parent" type="hidden"><label for="chapter-title">Chapter title</label><input id="chapter-title" required maxlength="500"><label for="chapter-author">Chapter author(s), if known</label><input id="chapter-author"><label for="chapter-summary">Summary and contents</label><textarea id="chapter-summary"></textarea><label for="chapter-bibliography">Bibliography / cited sources</label><textarea id="chapter-bibliography" placeholder="Paste the cited-source list"></textarea><label for="chapter-text">Chapter text</label><textarea id="chapter-text"></textarea><div class="actions"><button type="button" data-close="chapter-dialog">Cancel</button><button type="submit" class="primary">Add chapter</button></div></form></dialog>
 <dialog id="delete-dialog" class="delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-message delete-scope"><form id="delete-form"><div class="eyebrow">Manage your library</div><h2 id="delete-title">Delete book?</h2><p id="delete-message"></p><p id="delete-scope" class="muted"></p><div id="delete-error" class="notice error" role="alert" hidden></div><div class="actions"><button id="delete-cancel" type="button" data-close="delete-dialog" autofocus>Cancel</button><button id="delete-confirm" class="danger-primary" type="submit">Delete book</button></div></form></dialog>
 <div id="composite-popover" class="composite-popover" role="dialog" aria-label="Composite field contributions" hidden><div class="popover-top"><strong>Composite contributions</strong><button id="close-composite" class="small quiet" aria-label="Close composite contributions">×</button></div><p class="muted">Edit each field's weight (0–5). Both views use these values.</p><div id="composite-fields"></div><div class="popover-bottom"><span class="muted">Empty fields stay excluded.</span><button id="reset-weights" class="small">Reset</button></div></div>
 <div id="plot-tooltip" class="plot-tooltip" role="tooltip" hidden></div>
 <div id="toast" class="toast" role="status" hidden></div>
-<script id="initial-data" type="application/json">{"format":"personal-library-search","version":1,"model":{"id":"Xenova/e5-small-v2","revision":"02af799","dtype":"q8","dimensions":384,"runtime":"3.8.1","pooling":"mean","normalize":true,"passagePrefix":"passage: ","queryPrefix":"query: ","chunkVersion":1,"maxTokens":480},"appId":"library-search-public-v1","starterCatalog":true,"modifiedAt":"2026-11-04T23:09:03.872Z","source":null,"books":[],"weights":{"title":1,"summary":3,"contents":2,"index":2,"subjects":2,"full_text":2},"categories":[],"lastQuery":null,"queryCache":{},"activeCategory":null,"view":"ranking","sort":null,"comparison":null,"scoreScale":"relative"}</script>
+<script id="initial-data" type="application/json">{"format":"personal-library-search","version":2,"model":{"id":"Xenova/e5-small-v2","revision":"02af799","dtype":"q8","dimensions":384,"runtime":"3.8.1","pooling":"mean","normalize":true,"passagePrefix":"passage: ","queryPrefix":"query: ","chunkVersion":1,"maxTokens":480},"appId":"library-search-public-v1","starterCatalog":true,"modifiedAt":"2026-11-05T17:51:51.399Z","source":null,"books":[],"weights":{"title":1,"summary":3,"index":2,"subjects":2,"full_text":2,"bibliography":2},"categories":[],"lastQuery":null,"queryCache":{},"activeCategory":null,"view":"ranking","sort":null,"comparison":null,"scoreScale":"relative"}</script>
 <script>/* Library Search data and scoring core. No network, DOM, or generated metadata. */
 (function (root) {
   'use strict';
   const FIELDS = [
-    ['title', 'Title', 1], ['summary', 'Summary', 3], ['contents', 'Contents', 2],
+    ['title', 'Title', 1], ['summary', 'Summary & contents', 3], ['bibliography', 'Bibliography', 2],
     ['index', 'Index', 2], ['subjects', 'Subjects', 2], ['full_text', 'Full text', 2]
   ].map(([id, label, weight]) => ({id, label, weight}));
   const MODEL = {id:'Xenova/e5-small-v2', revision:'02af799', dtype:'q8', dimensions:384,
@@ -57,6 +60,72 @@
   const MODEL_KEY = JSON.stringify(MODEL);
   const clean = v => (v == null ? '' : String(v)).replace(/\u0000/g, '').trim();
   function emptyField() { return {text:'', source:'', vector:[], chunks:[], modelKey:''}; }
+  function mergeSummary(summary,contents) {
+    summary=clean(summary);contents=clean(contents);
+    if(!contents || summary.includes(contents))return summary||contents;
+    return (summary?summary+'\n\n':'')+'Table of contents:\n'+contents;
+  }
+  function chaptersFromContents(contents,source='Imported table of contents') {
+    return clean(contents).split(/\r?\n|\s+--\s+|;\s*/).map((line,index)=>{
+      const title=line.trim().replace(/\s*\((?:p\.?|PDF p\.)?\s*[\divxlcdm]+(?:[-\u2013][\divxlcdm]+)?\)\s*$/i,'').replace(/\.{2,}\s*[\divxlcdm]+\s*$/i,'').replace(/^[\s.:\-\u2013\u2014]+|[\s.:\-\u2013\u2014]+$/g,'');
+      return {title,chapterNumber:index+1,source};
+    }).filter(c=>c.title&&/[\p{L}\p{N}]/u.test(c.title)&&!structuralChapter(c.title));
+  }
+  const chapterKey=value=>clean(value).toLowerCase().replace(/\s+/g,' ').replace(/^[\d\s.:\-]+/,'');
+  const structuralChapter=title=>/^(?:(?:table of )?contents|(?:subject |name |general |analytical )?index|bibliography|references|works cited|literature cited|sources cited|acknowledg(?:e)?ments|copyright|abstract|summary)$/i.test(clean(title));
+  function hash(value) {let n=2166136261;for(const c of value){n^=c.charCodeAt(0);n=Math.imul(n,16777619);}return (n>>>0).toString(36);}
+  function fieldValue(value,source='') {
+    if(Array.isArray(value))value=value.map(item=>typeof item==='string'?item:clean(item?.unstructured||item?.citation)||[item?.author,item?.title,item?.year,item?.DOI||item?.doi].map(clean).filter(Boolean).join('. ')).map(clean).filter(Boolean).join('\n');
+    return typeof value==='object'&&value!==null?{...emptyField(),...value,text:clean(value.text),source:clean(value.source)||source}:{...emptyField(),text:clean(value),source:clean(value)?source:''};
+  }
+  function normalizeFields(fields={},fallbackTitle='') {
+    const legacy=fields.contents,oldSummary=fieldValue(fields.summary);
+    const merged=mergeSummary(oldSummary.text,typeof legacy==='object'?legacy?.text:legacy);
+    const combined=merged!==oldSummary.text?{...emptyField(),...oldSummary,text:merged,source:[oldSummary.source,clean(legacy?.source)].filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i).join('; '),vector:[],chunks:[],modelKey:''}:oldSummary;
+    const out=Object.fromEntries(FIELDS.map(f=>[f.id,fieldValue(f.id==='summary'?combined:fields[f.id])]));
+    if(!out.title.text&&fallbackTitle)out.title=fieldValue(fallbackTitle);
+    return out;
+  }
+  function makeChapter(parent,raw,index=0) {
+    raw=typeof raw==='string'?{title:raw}:raw||{};
+    const title=clean(raw.title||raw.fields?.title?.text);
+    if(!title||structuralChapter(title))return null;
+    const source=clean(raw.source||raw.fields?.title?.source||raw.fields?.summary?.source||'Chapter metadata');
+    const fields=normalizeFields(raw.fields||Object.fromEntries(FIELDS.map(f=>[f.id,raw[f.id]??(f.id==='full_text'?raw.text:f.id==='bibliography'?raw.references||raw.citations:'')])),title);
+    if(raw.contents)fields.summary=fieldValue(mergeSummary(fields.summary.text,raw.contents),source);
+    if(!fields.summary.text)fields.summary=fieldValue(title,source+' / chapter title only');
+    for(const f of FIELDS)if(fields[f.id].text&&!fields[f.id].source)fields[f.id].source=source;
+    const identifier=clean(raw.doi||raw.identifier||raw.id);
+    const position=Number(raw.chapterNumber)>0?Number(raw.chapterNumber):index+1;
+    const id=identifier.startsWith(parent.id+':chapter:')?identifier:parent.id+':chapter:'+hash(identifier||chapterKey(title)+'#'+position);
+    return {id,parentId:parent.id,title,author:clean(raw.author),isbn:clean(raw.isbn)||clean(parent.isbn),publication:clean(raw.publication)||clean(parent.publication),year:clean(raw.year)||clean(parent.year),language:clean(raw.language)||clean(parent.language),chapterNumber:position,doi:clean(raw.doi),pageStart:raw.pageStart??raw.page??'',pageEnd:raw.pageEnd??'',fields,chapters:[]};
+  }
+  function mergeChapters(book,chapters,{replace=false}={}) {
+    if(!Array.isArray(book.chapters))book.chapters=[];
+    let changed=0;
+    const proposed=Array.isArray(chapters)?chapters:[],titleCounts=new Map();for(const raw of proposed){const key=chapterKey(typeof raw==='string'?raw:raw?.title||raw?.fields?.title?.text);titleCounts.set(key,(titleCounts.get(key)||0)+1);}
+    for(const [index,raw]of proposed.entries()){
+      const next=makeChapter(book,raw,index);if(!next)continue;
+      const old=book.chapters.find(c=>c.id===next.id||(chapterKey(c.title)===chapterKey(next.title)&&!(c.doi&&next.doi&&c.doi!==next.doi)&&(titleCounts.get(chapterKey(next.title))===1||c.chapterNumber===next.chapterNumber)));
+      if(!old){book.chapters.push(next);changed++;continue;}
+      let updated=false;
+      for(const f of FIELDS){
+        const before=old.fields[f.id]||emptyField();let after=next.fields[f.id];
+        const titleOnly=f.id==='summary'&&chapterKey(before.text)===chapterKey(old.title)&&after.text!==next.title;
+        if(f.id==='bibliography'&&before.text&&after.text&&!replace){
+          const text=[...new Set((before.text+'\n'+after.text).split(/\n+/).map(clean).filter(Boolean))].join('\n');
+          after={...emptyField(),...after,text,source:[...new Set([before.source,after.source].filter(Boolean))].join('; '),vector:[],chunks:[],modelKey:''};
+        }
+        const referencesAdded=f.id==='bibliography'&&after.text!==before.text;
+        if(after.text&&!before.manual&&(!before.text||replace||titleOnly||referencesAdded)&&after.text!==before.text){old.fields[f.id]=after;updated=true;}
+      }
+      for(const key of ['doi','pageStart','pageEnd'])if((old[key]==null||old[key]==='')&&next[key]!==''&&next[key]!=null){old[key]=next[key];updated=true;}
+      if(next.author&&(!old.author||old.author===book.author)&&next.author!==old.author){old.author=next.author;updated=true;}
+      if(updated)changed++;
+    }
+    return changed;
+  }
+  function entries(books) {return (Array.isArray(books)?books:[]).flatMap(book=>[book,...(Array.isArray(book.chapters)?book.chapters:[])]);}
   function norm(a) {
     const n = Math.hypot(...a);
     return n && Number.isFinite(n) ? Array.from(a, x => x/n) : [];
@@ -96,13 +165,15 @@
       seen.add(id);
       const fields=Object.fromEntries(FIELDS.map(f=>[f.id,emptyField()]));
       const aliases={title:['Title','book_title'],summary:['Description','Synopsis','Summary'],
-        contents:['Table of Contents','Contents','toc'],index:['Index','Book Index'],
+        bibliography:['Bibliography','References','Cited Sources','Citations','Works Cited'],index:['Index','Book Index'],
         subjects:['Subjects','Subject'],full_text:['Full Text','full_text']};
       for(const f of FIELDS) {
         let text=lookup(row,aliases[f.id]);
         if(f.id==='subjects') text=text.replace(/\|/g,'; ');
         fields[f.id]={...emptyField(),text,source:text?source+' · '+f.label:''};
       }
+      const citedSources=Object.entries(row).find(([key])=>/^(bibliography|references|citedsources|citations|workscited)$/i.test(key.replace(/[\s_-]/g,'')))?.[1];
+      if(Array.isArray(citedSources))fields.bibliography=fieldValue(citedSources,source+' / bibliography');
       const rawSummary=lookup(row,['Summary']);
       let summaryNote='';
       const nativeCatalog=Object.keys(row).some(k=>/^Sort Character$/i.test(k));
@@ -110,11 +181,19 @@
       if((nativeCatalog && rawSummary && !explicitDescription) || bibliographicSummary(fields.summary.text,title)) {
         fields.summary=emptyField(); summaryNote='The export Summary is a bibliographic citation, not a synopsis.';
       }
-      books.push({id,title,author:lookup(row,['Primary Author','Author','Authors']),
+      const contents=lookup(row,['Table of Contents','Contents','toc']);
+      fields.summary={...fields.summary,text:mergeSummary(fields.summary.text,contents)};
+      if(fields.summary.text&&!fields.summary.source)fields.summary.source=source+' / summary and contents';
+      const book={id,title,author:lookup(row,['Primary Author','Author','Authors']),
         isbn:lookup(row,['ISBNs','ISBN']),publication:lookup(row,['Publication']),
         year:lookup(row,['Date','Year']),collections:lookup(row,['Collections']),
         language:lookup(row,['Languages','Language']),entryDate:lookup(row,['Entry Date']),
-        rawSummary,summaryNote,fields});
+        rawSummary,summaryNote,fields,chapters:[]};
+      const chapterInput=Object.entries(row).find(([key])=>/^chapters$/i.test(key))?.[1];
+      if(Array.isArray(chapterInput))mergeChapters(book,chapterInput);
+      else if(typeof chapterInput==='string'&&chapterInput.trim().startsWith('[')){try{mergeChapters(book,JSON.parse(chapterInput));}catch{throw Error('Invalid chapter list for '+title+'. Use a JSON array.');}}
+      else if(contents)mergeChapters(book,chaptersFromContents(contents,source+' / table of contents'));
+      books.push(book);
     }
     return books;
   }
@@ -182,16 +261,19 @@
       if(old.lookup)next.lookup=old.lookup;
       if(old.document)next.document=old.document;
       if(old.materialSources)next.materialSources=old.materialSources;
+      const proposed=next.chapters||[];next.chapters=old.chapters||[];mergeChapters(next,proposed);
       map.set(next.id,next);
     }
     return {books:[...map.values()],added,changed};
   }
   function validateSnapshot(data) {
-    if(data.format!=='personal-library-search' || data.version!==1 || !Array.isArray(data.books)) throw Error('This is not a supported Library Search snapshot.');
+    if(data.format!=='personal-library-search' || ![1,2].includes(data.version) || !Array.isArray(data.books)) throw Error('This is not a supported Library Search snapshot.');
     const seen=new Set();
-    for(const b of data.books) {
+    const normalize=(b,parent=null,index=0)=>{
       if(!b.id||!b.title||seen.has(b.id))throw Error('Invalid or duplicate book identifier in snapshot.');seen.add(b.id);
       if(!b.fields)throw Error('Missing book fields.');
+      const legacyContents=clean(b.fields.contents?.text);
+      b.fields=normalizeFields(b.fields,b.title);
       for(const f of FIELDS) {
         const d=b.fields[f.id]||emptyField();d.text=clean(d.text);d.source=clean(d.source);
         if(!ready(d)) {d.chunks=d.text&&d.modelKey===MODEL_KEY&&Array.isArray(d.chunks)?d.chunks.filter(p=>p.text&&validVector(p.vector)):[];d.vector=[];d.modelKey=d.chunks.length?MODEL_KEY:'';}
@@ -199,9 +281,21 @@
         b.fields[f.id]=Object.fromEntries(Object.entries(d).filter(([key])=>allowedField.has(key)));
       }
       b.fields=Object.fromEntries(FIELDS.map(f=>[f.id,b.fields[f.id]]));
-      const allowed=new Set(['id','title','author','isbn','publication','year','language','collections','entryDate','rawSummary','summaryNote','fields','lookup','document','materialSources']);
+      if(parent){b.parentId=parent.id;b.chapterNumber=Number(b.chapterNumber)||index+1;b.chapters=[];}
+      else{
+        const chapters=Array.isArray(b.chapters)?b.chapters:[];b.chapters=[];
+        for(const [i,raw]of chapters.entries()){
+          const chapter=makeChapter(b,raw,i);if(!chapter)continue;
+          if(b.chapters.some(c=>c.id===chapter.id))continue;
+          normalize(chapter,b,i);b.chapters.push(chapter);
+        }
+        if(!b.chapters.length&&legacyContents)mergeChapters(b,chaptersFromContents(legacyContents));
+      }
+      const allowed=new Set(['id','parentId','chapterNumber','doi','pageStart','pageEnd','title','author','isbn','publication','year','language','collections','entryDate','rawSummary','summaryNote','fields','lookup','document','materialSources','chapters']);
       for(const key of Object.keys(b))if(!allowed.has(key))delete b[key];
-    }
+    };
+    for(const b of data.books)normalize(b);
+    data.version=2;
     return data;
   }
   function chooseState(seed,saved) {
@@ -209,7 +303,7 @@
     if(seed.starterCatalog||saved.cleared===true||saved.localDeletes===true)return saved;
     return Date.parse(saved.modifiedAt)>Date.parse(seed.modifiedAt)?saved:seed;
   }
-  const api={FIELDS,MODEL,MODEL_KEY,clean,emptyField,norm,validVector,dot,centroid,bibliographicSummary,normalizeRows,parseDelimited,chunks,ready,scoreBook,rank,mergeBooks,validateSnapshot,chooseState};
+  const api={FIELDS,MODEL,MODEL_KEY,clean,emptyField,mergeSummary,chaptersFromContents,makeChapter,mergeChapters,entries,norm,validVector,dot,centroid,bibliographicSummary,normalizeRows,parseDelimited,chunks,ready,scoreBook,rank,mergeBooks,validateSnapshot,chooseState};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.LibraryCore=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
 </script>
@@ -350,12 +444,17 @@ if(typeof module!=='undefined'&&module.exports)module.exports=LibraryEmbeddingCl
    const fields={};
    const add=(field,value,scope='edition')=>{if(value)fields[field]={text:value,source:'Open Library / '+scope+' / '+(scope==='work'?workURL:editionURL),sourceURL:scope==='work'?workURL:editionURL,scope,provider:'Open Library',retrievedAt:checkedAt};};
    const title=text(d.title)+(text(d.subtitle)?': '+text(d.subtitle):'');add('title',title);
-   if(text(d.description))add('summary',text(d.description));else if(text(work.description))add('summary',text(work.description),'work');
-   add('contents',toc(d.table_of_contents));
+   const description=text(d.description)||text(work.description),contents=toc(d.table_of_contents||work.table_of_contents),scope=text(d.description)||d.table_of_contents?'edition':'work';
+   add('summary',contents?(description?description+'\n\n':'')+'Table of contents:\n'+contents:description,scope);
+   const chapters=list(d.table_of_contents||work.table_of_contents).map((item,index)=>{
+     const chapterTitle=typeof item==='string'?item.trim():text(item?.title);if(!chapterTitle)return null;
+     const page=typeof item?.pagenum==='number'?item.pagenum:text(item?.pagenum??item?.page);
+     return {title:chapterTitle,author:text(item?.author),chapterNumber:index+1,pageStart:page,source:'Open Library / table of contents / '+editionURL,fields:{title:{text:chapterTitle,source:'Open Library / table of contents / '+editionURL,provider:'Open Library'},summary:{text:chapterTitle,source:'Open Library / chapter title only / '+editionURL,provider:'Open Library'}}};
+   }).filter(Boolean);
    if(names(d.subjects).length)add('subjects',unique(names(d.subjects)).join('; '));else add('subjects',unique(names(work.subjects)).join('; '),'work');
    const references=list(d.authors).length?list(d.authors):list(work.authors).map(a=>a.author||a);
    const authors=unique(references.map(a=>text(a?.name)||text(documents[a?.key]?.name)));
-   return{isbn,status:'found',checkedAt,fields,title,author:authors.join('; '),publication:names(d.publishers).join('; '),year:text(d.publish_date),language:list(d.languages).map(x=>String(x.key||'').split('/').pop()).filter(Boolean).join('; '),editionKey,workKey,editionURL,matchBasis:known.includes(isbn)?'Edition ISBN identifiers':'ISBN endpoint'};
+   return{isbn,status:'found',checkedAt,fields,chapters,title,author:authors.join('; '),publication:names(d.publishers).join('; '),year:text(d.publish_date),language:list(d.languages).map(x=>String(x.key||'').split('/').pop()).filter(Boolean).join('; '),editionKey,workKey,editionURL,matchBasis:known.includes(isbn)?'Edition ISBN identifiers':'ISBN endpoint'};
  }
  function mergeLookups(books,records,C){
    const result=books.slice(),byISBN=new Map();let added=0,filled=0;
@@ -375,6 +474,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=LibraryEmbeddingCl
        }
        if(book.fields.title.text)book.title=book.fields.title.text;
        for(const key of ['author','publication','year','language'])if(!book[key]&&record[key])book[key]=record[key];
+       filled+=C.mergeChapters(book,record.chapters||[]);
      }
    }
    return{books:result,added,filled};
@@ -484,7 +584,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=LibraryEmbeddingCl
      if(visible.length>=2)line='<path class="plot-regression" d="M'+px(visible[0][0])+' '+py(visible[0][1])+'L'+px(visible[1][0])+' '+py(visible[1][1])+'"><title>Least-squares fit: slope '+fit.slope.toFixed(4)+'</title></path>';
    }
    const nodes=points.filter(p=>finite(p.x)&&finite(p.y)).sort((a,b)=>(a.id===selectedId)-(b.id===selectedId)).map(p=>{
-     const b=byId.get(p.id),description=(b?.title||p.id)+'; displayed X: '+p.x.toFixed(4)+'; displayed Y: '+p.y.toFixed(4)+'; raw X: '+p.rawX.toFixed(4)+'; raw Y: '+p.rawY.toFixed(4);
+     const b=byId.get(p.id),description=(b?.parentId?'Chapter: ':'')+(b?.title||p.id)+'; displayed X: '+p.x.toFixed(4)+'; displayed Y: '+p.y.toFixed(4)+'; raw X: '+p.rawX.toFixed(4)+'; raw Y: '+p.rawY.toFixed(4);
      return '<circle class="plot-node'+(p.id===selectedId?' selected':'')+'" cx="'+px(p.x)+'" cy="'+py(p.y)+'" r="'+(p.id===selectedId?6:4)+'" data-point="'+esc(p.id)+'" tabindex="0" role="button" aria-label="'+esc(description)+'"><title>'+esc(description)+'</title></circle>';
    }).join('');
    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+width+' '+height+'" role="group" aria-label="Book similarity to two queries, axes zero to one"><rect x="'+px(0)+'" y="'+py(1)+'" width="'+w+'" height="'+h+'" class="plot-background"/>'+grid+'<path class="plot-axis" d="M'+px(0)+' '+py(1)+'V'+py(0)+'H'+px(1)+'"/><text class="plot-label" x="'+(px(.5))+'" y="'+(height-12)+'" text-anchor="middle">X · '+esc(short(xLabel,w))+'<title>'+esc(xLabel)+'</title></text><text class="plot-label" transform="translate(15 '+py(.5)+') rotate(-90)" text-anchor="middle">Y · '+esc(short(yLabel,h))+'<title>'+esc(yLabel)+'</title></text>'+line+nodes+'</svg>';
@@ -493,64 +593,157 @@ if(typeof module!=='undefined'&&module.exports)module.exports=LibraryEmbeddingCl
  if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.LibraryViews=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
 </script>
-<script>(function(root){
+<script>﻿(function(root){
  'use strict';
  const list=x=>Array.isArray(x)?x:x==null?[]:[x];
- function plain(value){return list(value).map(v=>String(v||'')).join('\n').replace(/<\s*(?:br\s*\/?|\/p)>/gi,'\n').replace(/<[^>]*>/g,'').replace(/&#(x[\da-f]+|\d+);/gi,(_,n)=>{const code=n[0].toLowerCase()==='x'?parseInt(n.slice(1),16):Number(n);return code>=0&&code<=0x10ffff?String.fromCodePoint(code):'';}).replace(/&(amp|lt|gt|quot|apos|nbsp);/g,(_,k)=>({amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",nbsp:' '})[k]).trim();}
- const hasISBN=(values,isbn,I)=>list(values).flatMap(v=>String(v).replace(/[\-\u2010-\u2015]/g,'').match(/(?:97[89]\d{10}|\d{9}[\dXx])/g)||[]).some(v=>{try{return I.normalizeISBN(v)===isbn;}catch{return false;}});
+ const unique=values=>[...new Set(values.map(v=>String(v||'').trim()).filter(Boolean))];
+ function plain(value){return list(value).map(v=>typeof v==='object'&&v!==null?String(v.value||v.name||v.label||''):String(v||'')).join('\n').replace(/<\s*(?:br\s*\/?|\/p)>/gi,'\n').replace(/<[^>]*>/g,'').replace(/&#(x[\da-f]+|\d+);/gi,(_,n)=>{const code=n[0].toLowerCase()==='x'?parseInt(n.slice(1),16):Number(n);return code>=0&&code<=0x10ffff?String.fromCodePoint(code):'';}).replace(/&(amp|lt|gt|quot|apos|nbsp);/g,(_,k)=>({amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",nbsp:' '})[k]).trim();}
+ function safeURL(value,fallback=''){try{const url=new URL(String(value||''));return /^https?:$/.test(url.protocol)?url.href:fallback;}catch{return fallback;}}
+ const hasISBN=(values,isbn,I)=>list(values).flatMap(v=>String(v).replace(/[\-\u2010-\u2015\s]/g,'').match(/(?:97[89]\d{10}|\d{9}[\dXx])/g)||[]).some(v=>{try{return I.normalizeISBN(v)===isbn;}catch{return false;}});
+ const joint=(summary,contents)=>{summary=plain(summary);contents=plain(contents);return contents?(summary?summary+'\n\n':'')+'Table of contents:\n'+contents:summary;};
+ function proposal(provider,url){return {fields:{},chapters:[],sources:[{provider,url:safeURL(url),label:provider}],warnings:[]};}
+ function field(p,id,value,provider=p.sources[0]?.provider,url=p.sources[0]?.url){const text=plain(value);if(text)p.fields[id]={text,source:provider+' / '+url,sourceURL:safeURL(url),provider,retrievedAt:new Date().toISOString()};}
+ function chapter(title,author,provider,url,extras={}){title=plain(title).replace(/[\s\/:;]+$/g,'');if(!title||/^(?:(?:table of )?contents|bibliography|references|works cited|(?:subject |name )?index|acknowledg(?:e)?ments)$/i.test(title))return null;const p=proposal(provider,url);field(p,'title',title);field(p,'summary',extras.summary||'');field(p,'bibliography',extras.bibliography||'');field(p,'full_text',extras.full_text||'');return {title,author:plain(author),fields:p.fields,source:provider+' / '+url,sourceURL:safeURL(url),...extras};}
+ function contentsChapters(contents,provider,url){return plain(contents).split(/\s+--\s+|\n+/).map((line,i)=>{const parts=line.split(/\s+\/\s+/),title=parts[0].replace(/^\s*\d+[.)]\s*/,'');return chapter(title,parts.slice(1).join(' / '),provider,url,{chapterNumber:String(i+1),summary:title});}).filter(Boolean);}
  function google(data,isbn,I){
    const volume=list(data.items).find(v=>hasISBN(list(v.volumeInfo?.industryIdentifiers).map(x=>x.identifier),isbn,I));if(!volume)return null;
-   const v=volume.volumeInfo,url='https://books.google.com/books?id='+encodeURIComponent(volume.id),fields={};
-   const add=(id,value)=>{const text=plain(value);if(text)fields[id]={text,source:'Google Books / '+url,sourceURL:url,provider:'Google Books',retrievedAt:new Date().toISOString()};};
-   add('title',v.title+(v.subtitle?': '+v.subtitle:''));add('summary',v.description);add('subjects',v.categories);
-   return {fields,author:list(v.authors).join('; '),year:v.publishedDate||'',sources:[{provider:'Google Books',url,label:v.title}],warnings:[]};
+   const v=volume.volumeInfo,url='https://books.google.com/books?id='+encodeURIComponent(volume.id),p=proposal('Google Books',url);
+   field(p,'title',v.title+(v.subtitle?': '+v.subtitle:''));field(p,'summary',v.description);field(p,'subjects',v.categories);p.author=list(v.authors).join('; ');p.year=v.publishedDate||'';return p;
  }
  function archive(data,isbn,I){
    const m=data.metadata||{};if(!hasISBN(m.isbn,isbn,I))return null;
-   const id=String(m.identifier||''),url='https://archive.org/details/'+encodeURIComponent(id),fields={};
-   const add=(field,value)=>{const text=plain(value);if(text)fields[field]={text,source:'Internet Archive catalog / '+url,sourceURL:url,provider:'Internet Archive',retrievedAt:new Date().toISOString()};};
-   add('title',m.title);add('summary',m.description);add('subjects',m.subject);add('contents',m.table_of_contents);
+   const id=String(m.identifier||''),url='https://archive.org/details/'+encodeURIComponent(id),p=proposal('Internet Archive',url);
+   field(p,'title',m.title);field(p,'summary',joint(m.description,m.table_of_contents));field(p,'subjects',m.subject);p.author=plain(m.creator);p.year=plain(m.date);p.chapters=contentsChapters(m.table_of_contents,'Internet Archive',url);
    const restricted=data.is_dark||String(m['access-restricted-item']).toLowerCase()==='true';
    const file=restricted?null:list(data.files).find(f=>/^(?:DjVuTXT|DjVu Text)$/i.test(f.format||'')||/_djvu\.txt$/i.test(f.name||''));
-   const textFile=file&&file.private!==true&&file.private!=='true'&&Number(file.size||0)<20000000?{url:'https://archive.org/download/'+encodeURIComponent(id)+'/'+encodeURIComponent(file.name),label:file.name}:null;
-   return {fields,author:plain(m.creator),year:plain(m.date),textFile,sources:[{provider:'Internet Archive',url,label:plain(m.title)}],warnings:restricted?['Internet Archive item is restricted; only public catalog metadata is offered.']:[]};
+   p.textFile=file&&file.private!==true&&file.private!=='true'&&Number(file.size||0)<20000000?{url:'https://archive.org/download/'+encodeURIComponent(id)+'/'+encodeURIComponent(file.name),label:file.name}:null;
+   if(restricted)p.warnings.push('Internet Archive item is restricted; only public catalog metadata is offered.');return p;
+ }
+ function xmlDocument(xml){if(typeof root.DOMParser!=='function')throw Error('XML parsing is unavailable in this browser.');const doc=new root.DOMParser().parseFromString(String(xml),'application/xml');if(doc.getElementsByTagName('parsererror').length)throw Error('The catalog returned invalid XML.');return doc;}
+ const nodes=(element,name)=>{const found=Array.from(element.getElementsByTagNameNS('*',name));return found.length?found:Array.from(element.getElementsByTagName('*')).filter(n=>n.localName===name);};
+ const subfields=node=>nodes(node,'subfield');
+ const sub=(node,codes)=>subfields(node).filter(n=>codes.includes(n.getAttribute('code'))).map(n=>plain(n.textContent));
+ function marc(xml,isbn,I,{provider='Library of Congress',url='https://catalog.loc.gov/',unimarc=false}={}){
+   const doc=typeof xml==='string'?xmlDocument(xml):xml;
+   const records=nodes(doc,'record').filter(r=>Array.from(r.children).some(n=>n.localName==='datafield')&&hasISBN(nodes(r,'datafield').filter(n=>n.getAttribute('tag')===(unimarc?'010':'020')).flatMap(n=>sub(n,'a')),isbn,I));
+   if(!records.length)return null;
+   return combine(records.map(record=>{
+     const data=nodes(record,'datafield'),tag=t=>data.filter(n=>n.getAttribute('tag')===t),values=(t,c='a')=>tag(t).flatMap(n=>sub(n,c)),lines=(t,c='a')=>tag(t).map(n=>sub(n,c).join(' '));
+     const ark=String(record.getAttribute('id')||''),lccn=(values('010')[0]||'').replace(/\s+/g,'');
+     const recordURL=provider==='BnF'&&/^ark:\/12148\/[\w.-]+$/.test(ark)?'https://catalogue.bnf.fr/'+ark:provider==='Library of Congress'&&/^[a-z]{0,3}\d{8,12}$/i.test(lccn)?'https://lccn.loc.gov/'+lccn:url;
+     const p=proposal(provider,recordURL);
+     if(unimarc){
+       field(p,'title',lines('200','ae').join(' '));field(p,'summary',joint(values('330'),lines('327','at')));field(p,'subjects',data.filter(n=>/^6\d\d$/.test(n.getAttribute('tag')||'')).map(n=>sub(n,'abcdjxyz').join(' -- ')));p.author=unique(['700','701','702','710','711'].flatMap(t=>lines(t,'ab'))).join('; ');p.year=values('214','d')[0]||values('210','d')[0]||'';
+       p.chapters=contentsChapters(lines('327','at').join('\n'),provider,recordURL);
+     }else{
+       field(p,'title',lines('245','abnp').join(' '));field(p,'summary',joint(values('520','ab'),lines('505','agtr')));field(p,'subjects',data.filter(n=>/^6\d\d$/.test(n.getAttribute('tag')||'')).map(n=>sub(n,'abcdqvxyz').join(' -- ')));p.author=unique(['100','110','111','700','710'].flatMap(t=>lines(t,'abcdq'))).join('; ');p.year=values('264','c')[0]||values('260','c')[0]||'';
+       for(const row of tag('505')){
+         const entries=subfields(row),structured=[];let current=null;
+         for(const entry of entries){const code=entry.getAttribute('code'),text=plain(entry.textContent);if(code==='t'){if(current)structured.push(current);current={title:text,author:''};}else if(code==='r'&&current)current.author=text;}
+         if(current)structured.push(current);
+         p.chapters.push(...(structured.length?structured.map((c,i)=>chapter(c.title,c.author,provider,recordURL,{chapterNumber:String(i+1),summary:c.title})).filter(Boolean):contentsChapters(sub(row,'a').join('\n'),provider,recordURL)));
+       }
+     }
+     p.chapters.forEach((c,i)=>{c.chapterNumber=String(i+1);});
+     // MARC 504 records the presence of a bibliography, not a list of cited works.
+     const catalogLink=values('856','u').map(x=>safeURL(x)).find(Boolean);if(catalogLink)p.sources.push({provider,url:catalogLink,label:'Catalog link'});
+     return p;
+   }));
+ }
+ function hathi(data,isbn,I){
+   const records=Object.values(data.records||{}).filter(r=>hasISBN(r.isbns,isbn,I));if(!records.length)return null;
+   return combine(records.map(r=>{const url=safeURL(r.recordURL,'https://catalog.hathitrust.org/'),p=r['marc-xml']?marc(r['marc-xml'],isbn,I,{provider:'HathiTrust',url}):proposal('HathiTrust',url);if(!p)return null;if(!p.fields.title)field(p,'title',list(r.titles)[0],'HathiTrust',url);return p;}));
+ }
+ function referenceText(ref){if(ref.unstructured)return plain(ref.unstructured);return unique([ref.author,ref['article-title']||ref['volume-title']||ref['book-title']||ref['journal-title'],ref.year,ref.volume,ref['first-page'],ref.DOI?'https://doi.org/'+ref.DOI:'',ref.ISBN?'ISBN '+ref.ISBN:'']).join('. ');}
+ const names=values=>list(values).map(v=>plain(v.name||[v.given,v.family].filter(Boolean).join(' '))).filter(Boolean).join('; ');
+ function crossref(data,isbn,I){
+   const message=data.message||data,candidates=Array.isArray(message.items)?message.items:[message],items=candidates.filter(x=>hasISBN(x.ISBN||list(x['isbn-type']).map(i=>i.value),isbn,I));if(!items.length)return null;
+   const chapterTypes=['book-chapter','book-part','book-section','reference-entry'],books=items.filter(x=>!chapterTypes.includes(x.type)),chapters=items.filter(x=>chapterTypes.includes(x.type)).sort((a,b)=>{const order=x=>Number(x['chapter-number'])||parseInt(String(x.page||''),10)||Infinity;return order(a)-order(b)||String(list(a.title)[0]||'').localeCompare(String(list(b.title)[0]||''));});
+   const p=proposal('Crossref','https://search.crossref.org/?q='+encodeURIComponent(isbn)),main=books[0]||{};
+   field(p,'title',list(main.title)[0]||list(chapters[0]?.['container-title'])[0]);p.author=names(main.author||main.editor);p.year=String((main.published?.['date-parts']||main.issued?.['date-parts']||[])[0]?.[0]||'');
+   p.chapters=chapters.map((c,i)=>{const url=c.DOI?'https://doi.org/'+encodeURI(c.DOI):safeURL(c.URL,p.sources[0].url),bibliography=list(c.reference).map(referenceText).filter(Boolean).join('\n');return chapter(list(c.title)[0],names(c.author||c.editor),'Crossref',url,{doi:c.DOI||'',chapterNumber:String(c['chapter-number']||i+1),page:c.page||'',summary:plain(c.abstract),bibliography});}).filter(Boolean);
+   const descriptions=unique(books.map(x=>plain(x.abstract))),toc=p.chapters.map(c=>c.title+(c.author?' / '+c.author:'')).join('\n');field(p,'summary',joint(descriptions.join('\n\n'),toc));
+   field(p,'bibliography',unique(items.flatMap(x=>list(x.reference).map(referenceText))).join('\n'));field(p,'subjects',unique(items.flatMap(x=>list(x.subject))));
+   for(const item of items)if(item.DOI)p.sources.push({provider:'Crossref',url:'https://doi.org/'+encodeURI(item.DOI),label:plain(list(item.title)[0])||'DOI record'});
+   if(Number(message['total-results'])>candidates.length)p.warnings.push('Crossref returned an incomplete result set; additional chapter records may be available.');return p;
+ }
+ function metadataValues(metadata,pattern){return list(metadata).filter(m=>pattern.test(m.key||'')).map(m=>plain(m.value)).filter(Boolean);}
+ function repository(data,isbn,I,{provider='OAPEN',url='https://library.oapen.org/'}={}){
+   const candidates=Array.isArray(data)?data:list(data.items||data.results||data);
+   const matches=candidates.filter(item=>hasISBN(metadataValues(item.metadata,/(?:^|\.)(?:isbn|isbn13|isbn10)$/i),isbn,I));if(!matches.length)return null;
+   return combine(matches.map(item=>{
+     const metadata=item.metadata||[],v=pattern=>metadataValues(metadata,pattern),link=safeURL(v(/^dc\.identifier\.uri$/i)[0]||item.handle&&'https://hdl.handle.net/'+item.handle||'',url),p=proposal(provider,link),title=v(/^dc\.title$/i)[0]||item.name||'';
+     const summary=v(/^dc\.description(?:\.abstract)?$/i).join('\n\n'),contents=v(/^dc\.description\.(?:tableofcontents|toc)$/i).join('\n');field(p,'title',title);field(p,'summary',joint(summary,contents));field(p,'subjects',v(/^(?:dc\.subject(?:\..*)?|oapen\.subject.*)$/i));field(p,'bibliography',v(/^(?:dc\.relation\.references|dcterms\.references|dc\.description\.references)$/i).filter(x=>!/^includes? bibliograph/i.test(x)).join('\n'));p.author=v(/^dc\.(?:contributor\.author|creator)$/i).join('; ');p.year=v(/^dc\.date\.issued$/i)[0]||'';p.chapters=contentsChapters(contents,provider,link);
+     if(v(/^dc\.type$/i).some(x=>/chapter|book part/i.test(x))){const child=chapter(title,p.author,provider,link,{summary,bibliography:p.fields.bibliography?.text||'',doi:v(/^dc\.identifier\.doi$/i)[0]||''});p.chapters=child?[child]:[];delete p.fields.title;p.author='';field(p,'summary',joint('',title));}
+     for(const bitstream of list(item.bitstreams)){if(bitstream.mimeType!=='application/pdf'&&!/\.pdf$/i.test(bitstream.name||''))continue;const raw=String(bitstream.retrieveLink||bitstream.link||''),download=safeURL(raw.startsWith('/')?new URL(raw,url).href:raw);if(download)p.sources.push({provider,url:download,label:'Open-access PDF'});}
+     return p;
+   }));
+ }
+ function dpla(data,isbn,I){
+   const docs=list(data.docs).filter(d=>hasISBN(d.sourceResource?.identifier,isbn,I));if(!docs.length)return null;
+   return combine(docs.map(d=>{const s=d.sourceResource||{},url=safeURL(d.isShownAt,'https://dp.la/item/'+encodeURIComponent(d.id||'')),p=proposal('DPLA',url);field(p,'title',s.title);field(p,'summary',s.description);field(p,'subjects',list(s.subject).map(x=>typeof x==='string'?x:x.name));p.author=plain(s.creator);p.year=plain(s.date?.displayDate||s.date);return p;}));
+ }
+ function languageValues(value){if(value&&typeof value==='object'&&!Array.isArray(value))return Object.values(value).flatMap(list);return list(value);}
+ function europeana(data,isbn,I){
+   const objects=data.object?[data.object]:list(data.items||data);
+   return combine(objects.map(item=>{
+     const proxies=list(item.proxies),identifiers=[...languageValues(item.dcIdentifier),...proxies.flatMap(p=>languageValues(p.dcIdentifier))];if(!hasISBN(identifiers,isbn,I))return null;
+     const extract=name=>unique([...languageValues(item[name]),...proxies.flatMap(p=>languageValues(p[name]))]),id=String(item.about||item.id||''),url='https://www.europeana.eu/item/'+id.replace(/^\//,''),p=proposal('Europeana',url);field(p,'title',extract('dcTitle').length?extract('dcTitle'):item.title);field(p,'summary',extract('dcDescription'));field(p,'subjects',extract('dcSubject'));p.author=extract('dcCreator').join('; ');p.year=extract('dcDate').join('; ');return p;
+   }));
  }
  function combine(proposals){
-   const result={fields:{},sources:[],warnings:[]};
-   for(const p of proposals.filter(Boolean)){for(const [id,f]of Object.entries(p.fields||{}))if(!result.fields[id])result.fields[id]=f;for(const key of ['author','year','document'])if(p[key]&&!result[key])result[key]=p[key];result.sources.push(...p.sources||[]);result.warnings.push(...p.warnings||[]);if(p.textFile)result.textFile=p.textFile;}
-   return result;
+   const result={fields:{},chapters:[],sources:[],warnings:[]},chapterMap=new Map();let matched=false;
+   for(const p of proposals.filter(Boolean)){
+     if(Object.keys(p.fields||{}).length||p.chapters?.length||p.sources?.length)matched=true;
+     for(const [id,f]of Object.entries(p.fields||{})){
+       if(!f?.text)continue;const old=result.fields[id];
+       if(!old)result.fields[id]={...f};
+       else if(['summary','bibliography','subjects'].includes(id)&&old.text!==f.text)result.fields[id]={...old,text:(id==='summary'?unique([old.text,f.text]).join('\n\n'):unique((old.text+'\n'+f.text).split(/\n+/)).join('\n')),source:unique([old.source,f.source]).join('; '),provider:unique([old.provider,f.provider]).join('; ')};
+     }
+     const titleKey=c=>String(c.title||'').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+     for(const c of p.chapters||[]){const key=c.doi?'doi:'+String(c.doi).toLowerCase():titleKey(c)+'#'+String(c.chapterNumber||'');if(!key)continue;const old=Array.from(chapterMap.values()).find(old=>c.doi&&old.doi?String(c.doi).toLowerCase()===String(old.doi).toLowerCase():titleKey(old)===titleKey(c)&&(!c.chapterNumber||!old.chapterNumber||String(c.chapterNumber)===String(old.chapterNumber)));if(!old)chapterMap.set(key,{...c,fields:{...c.fields}});else{for(const [id,f]of Object.entries(c.fields||{}))if(!old.fields[id]?.text||f.text?.length>old.fields[id].text.length)old.fields[id]=f;if(!old.author)old.author=c.author;if(!old.doi)old.doi=c.doi;}}
+     for(const key of ['author','year','document'])if(p[key]&&!result[key])result[key]=p[key];result.sources.push(...p.sources||[]);result.warnings.push(...p.warnings||[]);if(p.textFile)result.textFile=p.textFile;
+   }
+   result.chapters=Array.from(chapterMap.values());result.sources=result.sources.filter((s,i,a)=>s.url&&a.findIndex(x=>x.url===s.url&&x.provider===s.provider)===i);result.warnings=unique(result.warnings);return matched||result.warnings.length?result:null;
  }
  class Client{
    constructor({fetchImpl=(...args)=>fetch(...args),sleep=ms=>new Promise(r=>setTimeout(r,ms)),interval=1100}={}){this.fetch=fetchImpl;this.sleep=sleep;this.interval=interval;this.next=0;}
-   async get(url,signal,text=false){
+   async get(url,signal,text=false,headers={}){
      const delay=Math.max(0,this.next-Date.now());if(delay)await this.sleep(delay);if(signal?.aborted)throw Error('Lookup stopped.');this.next=Date.now()+this.interval;
      const controller=new AbortController(),stop=()=>controller.abort(),timer=setTimeout(stop,25000);signal?.addEventListener('abort',stop,{once:true});
-     try{const response=await this.fetch(url,{signal:controller.signal,credentials:'omit',mode:'cors'});if(!response.ok)throw Error('HTTP '+response.status+' from '+new URL(url).hostname);if(text&&Number(response.headers?.get('Content-Length'))>20000000)throw Error('OCR text exceeds the 20 MB import limit.');const result=text?await response.text():await response.json();if(text&&result.length>20000000)throw Error('OCR text exceeds the 20 MB import limit.');return result;}
-     catch(e){if(signal?.aborted)throw Error('Lookup stopped.');if(e.name==='AbortError')throw Error('Repository request timed out.');throw e;}finally{clearTimeout(timer);signal?.removeEventListener('abort',stop);}
+     try{const response=await this.fetch(url,{signal:controller.signal,credentials:'omit',mode:'cors',headers:{Accept:text?'application/xml,text/plain;q=0.9':'application/json',...headers}});if(!response.ok)throw Error('HTTP '+response.status+' from '+new URL(url).hostname);if(text&&Number(response.headers?.get('Content-Length'))>20000000)throw Error('Text exceeds the 20 MB import limit.');const result=text?await response.text():await response.json();if(text&&result.length>20000000)throw Error('Text exceeds the 20 MB import limit.');return result;}
+     catch(e){if(signal?.aborted)throw Error('Lookup stopped.');if(e.name==='AbortError')throw Error('Repository request timed out.');if(e instanceof TypeError)throw Error('The request could not be read. Check the connection; this repository may block direct browser requests (CORS).');throw e;}finally{clearTimeout(timer);signal?.removeEventListener('abort',stop);}
    }
-   async lookup(isbn,{I,archiveEnabled=true,googleEnabled=false,googleKey='',signal}={}){
-     const found=[],warnings=[];
-     if(googleEnabled){try{if(!googleKey.trim())throw Error('Enter a Google Books API key for this session.');const params=new URLSearchParams({q:'isbn:'+isbn,maxResults:'10',key:googleKey.trim()});const record=google(await this.get('https://www.googleapis.com/books/v1/volumes?'+params,signal),isbn,I);if(record)found.push(record);else warnings.push('Google Books: no exact ISBN match.');}catch(e){warnings.push('Google Books: '+e.message);}}
-     if(archiveEnabled){try{
-       const alias=I.isbn10(isbn),params=new URLSearchParams({q:'mediatype:texts AND (isbn:'+isbn+(alias?' OR isbn:'+alias:'')+')',output:'json',rows:'3','fl[]':'identifier'});
-       const search=await this.get('https://archive.org/advancedsearch.php?'+params,signal);let record=null;
-       for(const item of list(search.response?.docs)){if(signal?.aborted)break;if(!/^[\w.-]+$/.test(item.identifier||''))continue;record=archive(await this.get('https://archive.org/metadata/'+encodeURIComponent(item.identifier),signal),isbn,I);if(record)break;}
-       if(record)found.push(record);else warnings.push('Internet Archive: no verified ISBN match.');
-     }catch(e){warnings.push('Internet Archive: '+e.message);}}
-     if(signal?.aborted)throw Error('Lookup stopped.');return combine([...found,{warnings}]);
+   async lookup(isbn,{I,archiveEnabled=true,googleEnabled=false,googleKey='',locEnabled=false,hathiEnabled=false,oapenEnabled=false,doabEnabled=false,crossrefEnabled=false,bnfEnabled=false,worldcatEnabled=false,worldcatToken='',dplaEnabled=false,dplaKey='',europeanaEnabled=false,europeanaKey='',onProgress=()=>{},signal}={}){
+     if(!I)throw Error('ISBN validation is unavailable.');isbn=I.normalizeISBN(isbn);const found=[],warnings=[];
+     const secrets=[googleKey,worldcatToken,dplaKey,europeanaKey].map(x=>x.trim()).filter(Boolean),redact=value=>{let text=String(value||'Lookup failed.');for(const secret of secrets){text=text.split(secret).join('[redacted]').split(encodeURIComponent(secret)).join('[redacted]');}return text.replace(/([?&](?:key|api_key|wskey)=)[^&\s]+/gi,'$1[redacted]');};
+     const run=async(enabled,name,fn)=>{if(!enabled)return;if(signal?.aborted)throw Error('Lookup stopped.');try{onProgress(name);const record=await fn();if(record&&(Object.keys(record.fields||{}).length||record.chapters?.length))found.push(record);else warnings.push(name+': no verified ISBN match.');}catch(e){if(signal?.aborted)throw Error('Lookup stopped.');warnings.push(name+': '+redact(e.message));}};
+     await run(googleEnabled,'Google Books',async()=>{if(!googleKey.trim())throw Error('Enter a Google Books API key for this session.');const params=new URLSearchParams({q:'isbn:'+isbn,maxResults:'10',key:googleKey.trim()});return google(await this.get('https://www.googleapis.com/books/v1/volumes?'+params,signal),isbn,I);});
+     await run(archiveEnabled,'Internet Archive',async()=>{const alias=I.isbn10(isbn),params=new URLSearchParams({q:'mediatype:texts AND (isbn:'+isbn+(alias?' OR isbn:'+alias:'')+')',output:'json',rows:'3','fl[]':'identifier'}),search=await this.get('https://archive.org/advancedsearch.php?'+params,signal);for(const item of list(search.response?.docs)){if(signal?.aborted)throw Error('Lookup stopped.');if(!/^[\w.-]+$/.test(item.identifier||''))continue;const record=archive(await this.get('https://archive.org/metadata/'+encodeURIComponent(item.identifier),signal),isbn,I);if(record)return record;}return null;});
+     await run(locEnabled,'Library of Congress',async()=>{const alias=I.isbn10(isbn),params=new URLSearchParams({version:'1.1',operation:'searchRetrieve',query:'bath.isbn='+isbn+(alias?' or bath.isbn='+alias:''),recordSchema:'marcxml',maximumRecords:'5'});return marc(await this.get('https://lx2.loc.gov/sru/lcdb?'+params,signal,true),isbn,I,{provider:'Library of Congress',url:'https://catalog.loc.gov/'});});
+     await run(hathiEnabled,'HathiTrust',async()=>hathi(await this.get('https://catalog.hathitrust.org/api/volumes/full/isbn/'+encodeURIComponent(I.isbn10(isbn)||isbn)+'.json',signal),isbn,I));
+     for(const [enabled,provider,base]of [[oapenEnabled,'OAPEN','https://library.oapen.org'],[doabEnabled,'DOAB','https://directory.doabooks.org']])await run(enabled,provider,async()=>{const alias=I.isbn10(isbn),query='"'+isbn+'"'+(alias?' OR "'+alias+'"':''),params=new URLSearchParams({query,expand:'metadata,bitstreams',limit:'25'});return repository(await this.get(base+'/rest/search?'+params,signal),isbn,I,{provider,url:base+'/'});});
+     await run(crossrefEnabled,'Crossref',async()=>{const alias=I.isbn10(isbn),params=new URLSearchParams({filter:'isbn:'+isbn+(alias?',isbn:'+alias:''),rows:'1000',cursor:'*'}),items=[],seen=new Set();let total=0;while(!seen.has(params.get('cursor'))){seen.add(params.get('cursor'));const response=await this.get('https://api.crossref.org/works?'+params,signal),page=response.message||{};items.push(...list(page.items));total=Number(page['total-results'])||items.length;if(items.length>=total||!page.items?.length||!page['next-cursor'])break;params.set('cursor',page['next-cursor']);}return crossref({message:{items,'total-results':total}},isbn,I);});
+     await run(bnfEnabled,'BnF',async()=>{const params=new URLSearchParams({version:'1.2',operation:'searchRetrieve',query:'bib.fuzzyISBN all "'+isbn+'"',recordSchema:'unimarcXchange',maximumRecords:'5'});return marc(await this.get('https://catalogue.bnf.fr/api/SRU?'+params,signal,true),isbn,I,{provider:'BnF',url:'https://catalogue.bnf.fr/',unimarc:true});});
+     await run(worldcatEnabled,'WorldCat',async()=>{if(!worldcatToken.trim())throw Error('Enter an institutional WorldCat access token for this session.');const headers={Authorization:'Bearer '+worldcatToken.trim()},params=new URLSearchParams({q:'bn:'+isbn,limit:'5'}),data=await this.get('https://metadata.api.oclc.org/worldcat/search/brief-bibs?'+params,signal,false,headers);for(const item of list(data.briefRecords)){const id=String(item.oclcNumber||'');if(!/^\d+$/.test(id))continue;const xml=await this.get('https://metadata.api.oclc.org/worldcat/manage/bibs/'+id,signal,true,{...headers,Accept:'application/marcxml+xml'}),record=marc(xml,isbn,I,{provider:'WorldCat',url:'https://search.worldcat.org/title/'+id});if(record)return record;}return null;});
+     await run(dplaEnabled,'DPLA',async()=>{if(!dplaKey.trim())throw Error('Enter a DPLA API key for this session.');const params=new URLSearchParams({'sourceResource.identifier':isbn,page_size:'10',api_key:dplaKey.trim()});return dpla(await this.get('https://api.dp.la/v2/items?'+params,signal),isbn,I);});
+     await run(europeanaEnabled,'Europeana',async()=>{if(!europeanaKey.trim())throw Error('Enter a Europeana API key for this session.');const headers={'X-Api-Key':europeanaKey.trim()},params=new URLSearchParams({query:'"'+isbn+'"',rows:'5',profile:'rich'}),data=await this.get('https://api.europeana.eu/record/v2/search.json?'+params,signal,false,headers),records=[];for(const item of list(data.items)){if(signal?.aborted)throw Error('Lookup stopped.');const id=String(item.id||'');if(!/^\/[\w.-]+\/[\w.%-]+$/.test(id))continue;const full=await this.get('https://api.europeana.eu/record/v2'+id+'.json',signal,false,headers),record=europeana(full,isbn,I);if(record)records.push(record);}return combine(records);});
+     if(signal?.aborted)throw Error('Lookup stopped.');return combine([...found,{warnings}])||{fields:{},chapters:[],sources:[],warnings};
    }
  }
- function apply(book,proposal,selected,C){
+ function apply(book,proposal,selected,C,{manual=true}={}){
    let changed=0;
-   for(const id of selected){const data=proposal.fields[id];if(!data?.text||!C.FIELDS.some(f=>f.id===id))continue;if(id==='summary'&&C.bibliographicSummary(data.text,book.title))continue;book.fields[id]={...C.emptyField(),...data,text:C.clean(data.text),manual:true};changed++;}
+   for(const id of selected){const data=proposal.fields?.[id];if(!data?.text||!C.FIELDS.some(f=>f.id===id))continue;if(id==='summary'&&C.bibliographicSummary(data.text,book.title))continue;if(book.fields[id]?.text===C.clean(data.text))continue;book.fields[id]={...C.emptyField(),...data,text:C.clean(data.text),manual};changed++;}
+   if(selected.includes('chapters')&&proposal.chapters?.length)changed+=C.mergeChapters(book,proposal.chapters);
    if(book.fields.title.text)book.title=book.fields.title.text;
    if(!book.isbn&&proposal.isbn)book.isbn=proposal.isbn;
    if(!book.author&&proposal.author)book.author=proposal.author;if(!book.year&&proposal.year)book.year=proposal.year;
    if(proposal.document&&selected.includes('full_text'))book.document=proposal.document;
-   book.materialSources=[...book.materialSources||[],...proposal.sources||[]];return changed;
+   book.materialSources=[...book.materialSources||[],...proposal.sources||[]].filter((s,i,a)=>a.findIndex(other=>other.url===s.url&&other.provider===s.provider)===i);return changed;
  }
- const api={plain,hasISBN,google,archive,combine,Client,apply};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.LibrarySources=api;
+ const api={plain,safeURL,hasISBN,joint,contentsChapters,google,archive,marc,hathi,referenceText,crossref,repository,dpla,europeana,combine,Client,apply};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.LibrarySources=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
+
 </script>
 <script>/* Local PDF extraction and conservative field/section detection. */
 (function(root){
@@ -565,7 +758,18 @@ if(typeof module!=='undefined'&&module.exports)module.exports=LibraryEmbeddingCl
  function analyze(pages,outline=[],metadata={},filename='book.pdf',options={}){
    if(!pages.length||pages.reduce((n,p)=>n+p.text.trim().length,0)<40)throw Error('No usable text found. Enable OCR for a scanned PDF and try again.');
    const source=options.source||'Local PDF: '+filename,provider=options.provider||'Local PDF',unit=options.unit||'PDF p.',warnings=[],total=pages.length;
-   let headings=outline.filter(x=>clean(x.title)&&Number.isInteger(x.page)&&x.page>=1&&x.page<=total);
+   const bibliographyPattern=/^(?:bibliography|references|works cited|literature cited|sources cited)$/i;
+   const structuralPattern=/^(?:(?:table of )?contents|(?:(?:subject|name|general|analytical)\s+)?index|bibliography|references|works cited|literature cited|sources cited|acknowledg(?:e)?ments|copyright|abstract|summary)$/i;
+   const allOutline=outline.filter(x=>clean(x.title)&&Number.isInteger(x.page)&&x.page>=1&&x.page<=total);
+   const tocPages=pages.filter(p=>p.number<=Math.min(20,total)&&p.text.split('\n').slice(0,8).some(line=>/^(?:table of )?contents$/i.test(clean(line))));
+   const tocTitles=tocPages.flatMap(p=>{
+     const lines=p.text.split('\n').map(clean),start=lines.findIndex(line=>/^(?:table of )?contents$/i.test(line));
+     return lines.slice(start+1).flatMap(line=>{
+       const match=line.match(/^(.+?)(?:\.{2,}|\s+)([\divxlcdm]+)\s*$/i);if(!match)return [];
+       const title=clean(match[1]).replace(/[.\s]+$/,'');return title&&!structuralPattern.test(title)&&/[\p{L}]/u.test(title)?[{title,pageStart:match[2]}]:[];
+     });
+   });
+   let headings=allOutline.slice();
    if(headings.length){
      let depth=Math.min(...headings.map(x=>x.depth||0)),level=headings.filter(x=>(x.depth||0)===depth);
      while(level.length===1&&headings.some(x=>(x.depth||0)>depth)){depth++;level=headings.filter(x=>(x.depth||0)===depth);}
@@ -582,7 +786,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=LibraryEmbeddingCl
    headings.sort((a,b)=>a.page-b.page);headings=headings.filter((h,i,a)=>i===0||h.page!==a[i-1].page);
    const fields={},add=(id,value,method)=>{if(clean(value))fields[id]={text:clean(value),source:source+' / '+method,provider,retrievedAt:new Date().toISOString()};};
    const title=clean(metadata.Title);add('title',title&&!/^(?:untitled|document\d*|microsoft word)/i.test(title)?title:filename.replace(/\.pdf$/i,'').replace(/[_-]+/g,' '),'document title or filename');
-   add('contents',headings.map(h=>h.title+' ('+unit+' '+h.page+')').join('\n'),'document contents');
+   const contents=(allOutline.length?allOutline:headings).map(h=>'  '.repeat(Math.min(6,h.depth||0))+h.title+' ('+unit+' '+h.page+')').join('\n')||tocPages.map(p=>clean(p.text)).join('\n\n');
    const section=(pattern,eligible)=>{
      const h=headings.find(h=>pattern.test(h.title)&&eligible(h.page));
      const start=h?h.page-1:pages.findIndex(p=>eligible(p.number)&&heading(p,pattern));if(start<0)return '';
@@ -591,11 +795,51 @@ if(typeof module!=='undefined'&&module.exports)module.exports=LibraryEmbeddingCl
      if(/summary|abstract|synopsis/i.test(pattern.source))end=Math.min(end,start+3);
      return pages.slice(start,end).map(p=>clean(p.text)).join('\n\n');
    };
-   add('summary',section(/^(?:abstract|summary|synopsis)$/i,p=>p<=Math.min(12,total)),'explicit abstract/summary section');
+   const summary=section(/^(?:abstract|summary|synopsis)$/i,p=>p<=Math.min(12,total));
+   add('summary',(summary?summary+'\n\n':'')+(contents?'Table of contents:\n'+contents:''),'explicit summary and document contents');
+   const allHeadings=(allOutline.length?allOutline:headings).slice().sort((a,b)=>a.page-b.page||(a.depth||0)-(b.depth||0));
+   let chapterCandidates=allHeadings.filter(h=>!structuralPattern.test(clean(h.title))&&!/^part\s+(?:\d+|[ivxlcdm]+|one|two|three|four|five|six|seven|eight|nine|ten)\b/i.test(clean(h.title)));
+   const explicitChapters=chapterCandidates.filter(h=>/^chapter\s+(?:\d+|[ivxlcdm]+|one|two|three|four|five|six|seven|eight|nine|ten)\b/i.test(clean(h.title)));
+   if(explicitChapters.length)chapterCandidates=explicitChapters;
+   let chapterDepth=Math.min(...chapterCandidates.map(h=>h.depth||0)),atDepth=chapterCandidates.filter(h=>(h.depth||0)===chapterDepth);
+   if(atDepth.length===1&&clean(atDepth[0].title).toLowerCase()===clean(metadata.Title).toLowerCase()&&chapterCandidates.some(h=>(h.depth||0)>chapterDepth)){chapterDepth=Math.min(...chapterCandidates.filter(h=>(h.depth||0)>chapterDepth).map(h=>h.depth||0));atDepth=chapterCandidates.filter(h=>(h.depth||0)===chapterDepth);}
+   const chapterHeads=atDepth.filter((h,i,a)=>i===0||h.page!==a[i-1].page);
+   const cutBibliography=text=>{
+     const lines=text.split('\n'),start=lines.findIndex(line=>bibliographyPattern.test(clean(line)));
+     if(start<0)return '';
+     let end=start+1;
+     while(end<lines.length&&!/^(?:chapter\s+\S+.*|part\s+\S+.*|(?:subject |name |general |analytical )?index|appendix(?:\s.*)?|acknowledg(?:e)?ments|(?:table of )?contents)$/i.test(clean(lines[end])))end++;
+     return lines.slice(start+1,end).join('\n').trim();
+   };
+   const referenceHeads=allHeadings.filter(h=>bibliographyPattern.test(clean(h.title)));
+   for(const p of pages)if(heading(p,bibliographyPattern)&&!referenceHeads.some(h=>h.page===p.number))referenceHeads.push({title:'References',page:p.number});
+   const bibliographies=referenceHeads.sort((a,b)=>a.page-b.page).map(h=>{
+     const end=allHeadings.find(next=>next.page>h.page)?.page||total+1;
+     return cutBibliography(pages.slice(h.page-1,end-1).map(p=>p.text).join('\n\n'));
+   }).filter(Boolean);
+   const chapters=chapterHeads.map((h,index)=>{
+     const next=chapterHeads[index+1]?.page||total+1;
+     const nextStructure=allHeadings.find(n=>n.page>h.page&&n.page<next&&structuralPattern.test(clean(n.title))&&(!bibliographyPattern.test(clean(n.title))||(n.depth||0)<=(h.depth||0)))?.page||next;
+     const end=Math.max(h.page,Math.min(next,nextStructure)-1),chapterPages=pages.slice(h.page-1,end),body=chapterPages.map(p=>clean(p.text)).join('\n\n');
+     const chapterSource=source+' / '+unit+' '+h.page+'-'+end,chapterFields={};
+     const addChapter=(id,value,method)=>{if(clean(value))chapterFields[id]={text:clean(value),source:chapterSource+' / '+method,provider,retrievedAt:new Date().toISOString()};};
+     addChapter('title',h.title,'chapter heading');
+     const abstract=body.match(/(?:^|\n)(?:abstract|summary|synopsis)\s*\n([\s\S]*?)(?=\n(?:chapter\s+\S+.*|introduction|references|bibliography|works cited)\s*\n|$)/i)?.[1];
+     addChapter('summary',abstract||h.title,abstract?'explicit chapter abstract':'chapter title only');
+     addChapter('full_text',body,'chapter page text');
+     const bibliography=cutBibliography(body);addChapter('bibliography',bibliography,'cited sources');
+     if(bibliography&&!bibliographies.includes(bibliography))bibliographies.push(bibliography);
+     return {title:clean(h.title),author:'',chapterNumber:index+1,pageStart:h.page,pageEnd:end,source:chapterSource,fields:chapterFields};
+   });
+   if(!chapters.length)for(const [index,toc]of tocTitles.entries()){
+     const chapterSource=source+' / table of contents; printed page '+toc.pageStart;
+     chapters.push({title:toc.title,author:'',chapterNumber:index+1,pageStart:toc.pageStart,source:chapterSource,fields:{title:{text:toc.title,source:chapterSource,provider},summary:{text:toc.title,source:chapterSource+' / chapter title only',provider}}});
+   }
+   add('bibliography',[...new Set(bibliographies)].join('\n\n'),'cited sources from explicit bibliography/reference sections');
    add('index',section(/^(?:(?:subject|name|general|analytical)\s+)?index$/i,p=>p>total*.5),'index section');
    add('full_text',pages.map(p=>clean(p.text)).filter(Boolean).join('\n\n'),'extracted page text');
    const emptyPages=pages.filter(p=>p.text.trim().length<30).length;if(emptyPages)warnings.push(emptyPages+' pages have little or no text. Enable OCR if they contain scans.');
-   return {fields,author:clean(metadata.Author),document:{filename,pages:total,importedAt:new Date().toISOString(),method:options.method||'PDF text extraction',ocrPages:pages.filter(p=>p.ocr).length},warnings,sources:[{provider,label:filename,url:options.url||''}]};
+   return {fields,chapters,author:clean(metadata.Author),document:{filename,pages:total,importedAt:new Date().toISOString(),method:options.method||'PDF text extraction',ocrPages:pages.filter(p=>p.ocr).length},warnings,sources:[{provider,label:filename,url:options.url||''}]};
  }
  async function extract(bytes,{pdfjs,filename='book.pdf',password='',ocrFactory=null,onProgress=()=>{},signal}={}){
    const stopped=()=>{if(signal?.aborted){const e=Error('PDF import stopped.');e.name='AbortError';throw e;}};
@@ -626,13 +870,19 @@ if(typeof module!=='undefined'&&module.exports)module.exports=LibraryEmbeddingCl
  'use strict';
  function create({$,C,I,P,S,esc,getState,isBusy,setBusy,refresh,save,toast}){
    let proposal=null,controller=null,pdfjs=null;
-   const target=()=>getState().books.find(b=>b.id===$('material-book').value);
+   const target=()=>C.entries(getState().books).find(b=>b.id===$('material-book').value);
+   function lookupOptions(){
+     const options={I};
+     for(const id of ['archive','google','loc','hathi','oapen','doab','crossref','bnf','worldcat','dpla','europeana'])options[id+'Enabled']=$('material-'+id).checked;
+     options.googleKey=$('material-key').value;options.worldcatToken=$('material-worldcat-token').value;options.dplaKey=$('material-dpla-key').value;options.europeanaKey=$('material-europeana-key').value;
+     return options;
+   }
    const message=(text,error=false)=>{$('material-status').textContent=text;$('material-status').className='notice'+(error?' error':'');$('material-status').hidden=!text;};
    function clearReview(){proposal=null;$('material-review').innerHTML='';$('material-sources').innerHTML='';$('material-apply').disabled=true;}
    function reset(){clearReview();$('material-isbn').value=I.bookISBNs(target()||{})[0]||'';message('');}
    function open(id=''){
      if(isBusy())return;
-     $('material-book').innerHTML='<option value="">New book from PDF or ISBN</option>'+getState().books.map(b=>'<option value="'+esc(b.id)+'">'+esc(b.title)+'</option>').join('');$('material-book').value=id;reset();$('material-file').value='';$('material-dialog').showModal();
+     $('material-book').innerHTML='<option value="">New book from PDF or ISBN</option>'+C.entries(getState().books).map(b=>'<option value="'+esc(b.id)+'">'+(b.parentId?'↳ Chapter: ':'')+esc(b.title)+'</option>').join('');$('material-book').value=id;reset();$('material-file').value='';$('material-dialog').showModal();
    }
    function loading(value){
      for(const id of ['material-book','material-file','material-read','material-lookup','material-apply'])$(id).disabled=value;
@@ -647,17 +897,23 @@ if(typeof module!=='undefined'&&module.exports)module.exports=LibraryEmbeddingCl
      $('material-review').innerHTML=C.FIELDS.filter(f=>data.fields[f.id]?.text).map(f=>{
        const exists=Boolean(book?.fields[f.id]?.text||book?.fields[f.id]?.manual),d=data.fields[f.id];
        return '<div class="material-field"><label class="material-choice"><input type="checkbox" data-material-field="'+f.id+'" '+(exists?'':'checked')+'><strong>'+f.label+'</strong><small>'+(exists?'Existing value kept unless selected':'Fill empty field')+'</small></label><details><summary>Review / edit '+d.text.length.toLocaleString()+' characters</summary><textarea data-material-text="'+f.id+'" aria-label="Extracted '+f.label+'">'+esc(d.text)+'</textarea><div class="field-state">'+esc(d.source)+'</div></details></div>';
-     }).join('')||'<p class="muted">No additional field text was returned.</p>';
+     }).join('');
+     if(data.chapters?.length&&!book?.parentId){
+       $('material-review').innerHTML+='<div class="material-field"><label class="material-choice"><input type="checkbox" data-material-field="chapters" checked><strong>'+data.chapters.length+' chapter entries</strong><small>Merge chapter titles, authors, text and cited sources where available</small></label><details><summary>Review chapters</summary><ol>'+data.chapters.map(c=>'<li><strong>'+esc(c.title)+'</strong>'+(c.author?' — '+esc(c.author):'')+'<div class="field-state">'+esc(C.FIELDS.filter(f=>c.fields?.[f.id]?.text||c[f.id]).map(f=>f.label).join(', ')||'Chapter title only')+'</div></li>').join('')+'</ol></details></div>';
+     }
+     if(!$('material-review').innerHTML)$('material-review').innerHTML='<p class="muted">No additional field text was returned.</p>';
      const links=(data.sources||[]).map(s=>s.url?'<a href="'+esc(s.url)+'" target="_blank" rel="noreferrer">'+esc(s.provider)+'</a>':esc(s.label)).join(' · ');
      $('material-sources').innerHTML=links;
      message((data.warnings||[]).join(' '));$('material-apply').disabled=false;
    }
    async function lookup(){
-     if(isBusy())return;let isbn;try{isbn=I.normalizeISBN($('material-isbn').value);}catch(e){message(e.message,true);return;}
-     if(!$('material-archive').checked&&!$('material-google').checked){message('Select at least one repository.');return;}
+     if(isBusy())return;
+     if(target()?.parentId){message('ISBN lookups describe the whole book. Select the parent book for metadata lookup, or import a chapter PDF into this chapter.');return;}
+     let isbn;try{isbn=I.normalizeISBN($('material-isbn').value);}catch(e){message(e.message,true);return;}
+     const options=lookupOptions();if(!Object.keys(options).some(key=>key.endsWith('Enabled')&&options[key])){message('Select at least one repository.');return;}
      clearReview();controller=new AbortController();setBusy('material');loading(true);message('Looking up public metadata for the supplied ISBN…');
      try{
-       const client=new S.Client(),data=await client.lookup(isbn,{I,archiveEnabled:$('material-archive').checked,googleEnabled:$('material-google').checked,googleKey:$('material-key').value,signal:controller.signal});
+       const client=new S.Client(),data=await client.lookup(isbn,{...options,signal:controller.signal,onProgress:name=>message('Looking up '+name+'…')});
        if(data.textFile&&$('material-archive-text').checked){try{
          message('Reading publicly downloadable Internet Archive OCR text…');const text=await client.get(data.textFile.url,controller.signal,true),hasPages=text.includes('\f');
          const blocks=hasPages?text.split('\f'):text.match(/[\s\S]{1,6000}/g)||[],pages=blocks.map((text,i)=>({number:i+1,text}));
@@ -692,14 +948,14 @@ if(typeof module!=='undefined'&&module.exports)module.exports=LibraryEmbeddingCl
      S.apply(book,proposal,selected,C);refresh(book.id);await save();$('material-dialog').close();toast('Source text saved. Build embeddings to index the new fields.');
    }
    $('material-book').onchange=reset;$('material-read').onclick=readPDF;$('material-lookup').onclick=lookup;$('material-apply').onclick=apply;$('material-stop').onclick=()=>{controller?.abort();message('Stopping import. An active OCR page may take a moment to finish.');};
-   $('material-dialog').addEventListener('close',()=>{controller?.abort();$('material-key').value='';$('material-password').value='';});
+   $('material-dialog').addEventListener('close',()=>{controller?.abort();$('material-password').value='';});
    function clear(){
      controller?.abort();controller=null;clearReview();
-     for(const id of ['material-book','material-file','material-isbn','material-key','material-password'])$(id).value='';
+     for(const id of ['material-book','material-file','material-isbn','material-key','material-worldcat-token','material-dpla-key','material-europeana-key','material-password'])$(id).value='';
      $('material-book').innerHTML='';message('');$('material-progress').hidden=true;$('material-progress').value=0;
      if($('material-dialog').open)$('material-dialog').close();
    }
-   return {open,clear};
+   return {open,clear,lookupOptions};
  }
  const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.LibraryMaterials=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
@@ -762,14 +1018,17 @@ postMessage({type:'booted'});
  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const fmt=n=>n===null||n===undefined?'—':n.toFixed(4);
  const currentCategory=()=>state.categories.find(c=>c.id===state.activeCategory);
+ const entries=()=>C.entries(state.books);
+ const findEntry=id=>entries().find(b=>b.id===id);
+ const expandedChapters=new Set();
  function normalizeState(s){
    C.validateSnapshot(s);
    const weights=input=>Object.fromEntries(C.FIELDS.map(f=>[f.id,Number.isFinite(Number(input?.[f.id]))?Math.max(0,Math.min(5,Number(input[f.id]))):f.weight]));
    const queries=Object.create(null);for(const [key,q]of Object.entries(s.queryCache||{}))if(q?.modelKey===C.MODEL_KEY&&C.validVector(q.vector))queries[key]={query:C.clean(q.query||key),vector:q.vector,modelKey:C.MODEL_KEY};
    const validQuery=q=>q?.modelKey===C.MODEL_KEY&&C.validVector(q.vector)?{query:C.clean(q.query),vector:q.vector,modelKey:C.MODEL_KEY}:null;
-   const cache={};for(const [key,entry]of Object.entries(s.isbnCache||{}))if(entry?.record){const r=entry.record,record=Object.fromEntries(['isbn','status','checkedAt','title','author','publication','year','language','editionKey','workKey','editionURL','matchBasis','warning','error'].filter(k=>r[k]!==undefined).map(k=>[k,r[k]]));record.fields=Object.fromEntries(C.FIELDS.filter(f=>r.fields?.[f.id]?.text).map(f=>[f.id,r.fields[f.id]]));cache[key]={savedAt:entry.savedAt,record};}
+   const cache={};for(const [key,entry]of Object.entries(s.isbnCache||{}))if(entry?.record){const r=entry.record,record=Object.fromEntries(['isbn','status','checkedAt','title','author','publication','year','language','editionKey','workKey','editionURL','matchBasis','warning','error'].filter(k=>r[k]!==undefined).map(k=>[k,r[k]]));if(r.fields?.contents?.text){const prior=r.fields.summary||{},toc=r.fields.contents;r.fields.summary={...C.emptyField(),text:C.mergeSummary(prior.text,toc.text),source:[prior.source,toc.source].filter(Boolean).join(' / ')};}record.chapters=r.chapters||[];record.fields=Object.fromEntries(C.FIELDS.filter(f=>r.fields?.[f.id]?.text).map(f=>[f.id,r.fields[f.id]]));cache[key]={savedAt:entry.savedAt,record};}
    const comparison=s.comparison?.modelKey===C.MODEL_KEY&&C.validVector(s.comparison.xVector)&&C.validVector(s.comparison.yVector)&&C.clean(s.comparison.xQuery)&&C.clean(s.comparison.yQuery)?{xQuery:C.clean(s.comparison.xQuery),yQuery:C.clean(s.comparison.yQuery),xVector:s.comparison.xVector,yVector:s.comparison.yVector,modelKey:C.MODEL_KEY}:null;
-   return {format:'personal-library-search',version:1,model:C.MODEL,appId:'library-search-public-v1',starterCatalog:s.starterCatalog!==false,modifiedAt:s.modifiedAt,source:s.source?.file?{file:C.clean(s.source.file)}:null,
+   return {format:'personal-library-search',version:2,model:C.MODEL,appId:'library-search-public-v1',starterCatalog:s.starterCatalog!==false,modifiedAt:s.modifiedAt,source:s.source?.file?{file:C.clean(s.source.file)}:null,
     books:s.books,weights:weights(s.weights),scoreScale:s.scoreScale==='raw'?'raw':'relative',
     categories:Array.isArray(s.categories)?s.categories.filter(c=>c.id&&c.name&&c.query).map(c=>({id:c.id,name:c.name,query:c.query,weights:weights(c.weights),members:Array.isArray(c.members)?c.members:[]})):[],
     queryCache:queries,lastQuery:validQuery(s.lastQuery),view:s.view==='comparison'?'comparison':'ranking',comparison,
@@ -779,7 +1038,7 @@ postMessage({type:'booted'});
  function notice(message,error=false){$('notice').hidden=!message;$('notice').textContent=message||'';$('notice').className='notice'+(error?' error':'');}
  function toast(message){clearTimeout(toastTimer);$('toast').textContent=message;$('toast').hidden=false;toastTimer=setTimeout(()=>$('toast').hidden=true,3500);}
  function status(title,description,percent=null){$('status-title').textContent=title;$('status-description').textContent=description;$('progress').hidden=percent===null;if(percent!==null)$('progress').value=percent;}
- function counts(){return C.FIELDS.map(f=>({...f,text:state.books.filter(b=>b.fields[f.id].text).length,ready:state.books.filter(b=>C.ready(b.fields[f.id])).length}));}
+ function counts(){const all=entries();return C.FIELDS.map(f=>({...f,text:all.filter(b=>b.fields[f.id].text).length,ready:all.filter(b=>C.ready(b.fields[f.id])).length}));}
  function indexStatus(){
    if(busy)return;
    $('delete-all-btn').disabled=!hasLocalData();
@@ -816,16 +1075,16 @@ postMessage({type:'booted'});
  }
  function hasLocalData(){return Boolean(state.books.length||state.categories.length||state.lastQuery||state.comparison||state.source||Object.keys(state.queryCache).length||Object.keys(state.isbnCache).length||state.isbnReport.length);}
  function askDelete(id=null){
-   if(busy)return;const all=id===null,book=state.books.find(b=>b.id===id);if(all?!hasLocalData():!book)return;
+   if(busy)return;const all=id===null,book=findEntry(id);if(all?!hasLocalData():!book)return;
    hideComposite();deleteTarget=all?{all:true}:{id};$('delete-error').hidden=true;$('delete-error').textContent='';
-   $('delete-title').textContent=all?'Delete all local library data?':'Delete this book?';
+   $('delete-title').textContent=all?'Delete all local library data?':book.parentId?'Delete this chapter?':'Delete this book?';
    $('delete-message').textContent=all?'Permanently delete '+state.books.length.toLocaleString()+' books and all saved library data in this browser?':'Delete “'+book.title+'” from your library?';
-   $('delete-scope').textContent=all?'This removes book text, embeddings, categories, cached ISBN lookups, lookup history, and saved queries. Downloaded HTML files, backups, and original PDFs remain on disk.':'The book, its embeddings, and category assignments will be removed. Unshared cached ISBN lookup data is also deleted. Downloaded files remain on disk.';
-   $('delete-confirm').textContent=all?'Delete All':'Delete book';$('delete-dialog').showModal();$('delete-cancel').focus();
+   $('delete-scope').textContent=all?'This removes book and chapter text, embeddings, categories, cached ISBN lookups, lookup history, and saved queries. Downloaded HTML files, backups, and original PDFs remain on disk.':book.parentId?'This chapter, its embeddings, and its category assignments will be removed. The parent book is kept.':'The book, its chapters, embeddings, and category assignments will be removed. Unshared cached ISBN lookup data is also deleted. Downloaded files remain on disk.';
+   $('delete-confirm').textContent=all?'Delete All':book.parentId?'Delete chapter':'Delete book';$('delete-dialog').showModal();$('delete-cancel').focus();
  }
  function clearBookScreens(all){
    materials.clear();
-   for(const id of ['edit-dialog','category-dialog','isbn-dialog'])if($(id).open)$(id).close();
+   for(const id of ['edit-dialog','chapter-dialog','category-dialog','isbn-dialog'])if($(id).open)$(id).close();
    for(const id of ['edit-book-title','isbn-validation'])$(id).textContent='';
    for(const id of ['edit-text','edit-field','isbn-input','isbn-file','file-input'])$(id).value='';
    $('edit-field').innerHTML='';$('isbn-progress').hidden=true;$('isbn-progress').value=0;
@@ -842,10 +1101,11 @@ postMessage({type:'booted'});
    let next;
    if(all)next=normalizeState({format:'personal-library-search',version:1,books:[],weights:{},categories:[],cleared:true,localDeletes:true,starterCatalog:true});
    else{
-     const book=state.books.find(b=>b.id===target.id);if(!book){$('delete-dialog').close();return;}
-     const books=state.books.filter(b=>b.id!==target.id),remaining=new Set(books.flatMap(I.bookISBNs)),unused=new Set(I.bookISBNs(book).filter(isbn=>!remaining.has(isbn))),cache={...state.isbnCache};
+     const book=findEntry(target.id);if(!book){$('delete-dialog').close();return;}
+     const removed=new Set(book.parentId?[book.id]:C.entries([book]).map(b=>b.id));
+     const books=book.parentId?state.books.map(b=>b.id===book.parentId?{...b,chapters:(b.chapters||[]).filter(ch=>ch.id!==book.id)}:b):state.books.filter(b=>b.id!==target.id),remaining=new Set(books.flatMap(I.bookISBNs)),unused=new Set((book.parentId?[]:I.bookISBNs(book)).filter(isbn=>!remaining.has(isbn))),cache={...state.isbnCache};
      for(const isbn of unused)delete cache[isbn];
-     next={...state,books,categories:state.categories.map(c=>({...c,members:c.members.filter(id=>id!==target.id)})),isbnCache:cache,isbnReport:state.isbnReport.filter(r=>!unused.has(r.isbn)),cleared:books.length===0,localDeletes:true};
+     next={...state,books,categories:state.categories.map(c=>({...c,members:c.members.filter(id=>!removed.has(id))})),isbnCache:cache,isbnReport:state.isbnReport.filter(r=>!unused.has(r.isbn)),cleared:books.length===0,localDeletes:true};
    }
    next.modifiedAt=new Date().toISOString();setBusy('deleting');$('delete-confirm').disabled=true;$('delete-cancel').disabled=true;$('delete-error').hidden=true;
    let committed=false;
@@ -874,16 +1134,18 @@ postMessage({type:'booted'});
  function renderSidebar(){
    const stats=counts(),populated=stats.filter(f=>f.text),ready=stats.reduce((n,f)=>n+f.ready,0),total=stats.reduce((n,f)=>n+f.text,0);
    $('book-count').textContent=state.books.length.toLocaleString();
+   $('chapter-count').textContent=(entries().length-state.books.length).toLocaleString()+' chapter entries';
    $('coverage-caption').textContent=populated.length+' of '+C.FIELDS.length+' fields available · '+ready.toLocaleString()+'/'+total.toLocaleString()+' indexed';
    $('total-coverage').innerHTML=stats.map(f=>'<span class="coverage-cell '+(f.ready===f.text&&f.text?'ready':f.text?'present':'')+'" title="'+esc(f.label+': '+f.text+' books')+'"></span>').join('');
    renderWeightFields();
    $('categories').innerHTML=state.categories.map(c=>'<button class="side-item '+(c.id===state.activeCategory?'active':'')+'" data-category="'+esc(c.id)+'" title="'+esc(c.query)+'">'+esc(c.name)+' <span class="muted" style="font-size:10px">'+c.members.length+'</span></button>').join('');
    $('all-books').classList.toggle('active',!state.activeCategory);
    $('assigned-wrap').hidden=!currentCategory();
-   const enriched=state.books.filter(b=>b.lookup?.status==='found').length;
-   $('source-caption').textContent=(state.source?.file||(state.books.length?'Your library':'No catalog imported'))+(enriched?' + Open Library metadata':'');
-   $('help-source').textContent=(state.source?.file||(state.books.length?'Your library':'No catalog imported'))+' · '+state.books.length+' catalog records. '+(enriched?enriched+' books have ISBN metadata from Open Library.':'No external enrichment has been applied.');
-   $('help-coverage').textContent=state.books.length?stats.filter(f=>f.text).map(f=>f.label+': '+f.text+' books').join('. ')+'. Missing fields remain empty.':'No books added yet.';
+   const enriched=state.books.filter(b=>b.lookup?.status==='found'||b.materialSources?.length).length;
+   const providers=[...new Set(state.books.flatMap(b=>[...(b.lookup?.status==='found'?['Open Library']:[]),...(b.materialSources||[]).map(s=>s.provider)]).filter(Boolean))];
+   $('source-caption').textContent=(state.source?.file||(state.books.length?'Your library':'No catalog imported'))+(enriched?' + source metadata':'');
+   $('help-source').textContent=(state.source?.file||(state.books.length?'Your library':'No catalog imported'))+' · '+state.books.length+' catalog records. '+(enriched?enriched+' books have source material from '+providers.join(', ')+'.':'No external enrichment has been applied.');
+   $('help-coverage').textContent=state.books.length?stats.filter(f=>f.text).map(f=>f.label+': '+f.text+' book/chapter entries').join('. ')+'. Missing fields remain empty.':'No books added yet.';
  }
  function renderWeightFields(){
    $('composite-fields').innerHTML=counts().map(f=>'<div class="contribution-row"><label for="weight-'+f.id+'">'+f.label+' :<small>'+(!f.text?'No text available':f.ready+' / '+f.text+' indexed')+'</small></label><input id="weight-'+f.id+'" data-weight="'+f.id+'" type="number" min="0" max="5" step="0.5" value="'+state.weights[f.id]+'" aria-label="'+f.label+' weight"></div>').join('');
@@ -897,14 +1159,15 @@ postMessage({type:'booted'});
  }
  function setView(view){state.view=view;hideComposite();$('plot-tooltip').hidden=true;renderResults();saveSoon();}
  function filterRows(rows){
-   const books=new Map(state.books.map(b=>[b.id,b])),text=$('filter').value.trim().toLowerCase(),category=currentCategory();
-   return rows.filter(r=>{const b=books.get(r.id);return b&&(!text||(b.title+' '+b.author).toLowerCase().includes(text))&&(!$('assigned-only').checked||!category||category.members.includes(r.id));});
+   const books=new Map(entries().map(b=>[b.id,b])),text=$('filter').value.trim().toLowerCase(),category=currentCategory();
+   return rows.filter(r=>{const b=books.get(r.id),parent=books.get(b?.parentId);return b&&(!text||(b.title+' '+b.author+' '+(parent?.title||'')+' '+(parent?.author||'')).toLowerCase().includes(text))&&(!$('assigned-only').checked||!category||category.members.includes(r.id)||parent&&category.members.includes(parent.id));});
  }
  function displayScore(r,id=null){return state.scoreScale==='relative'?(id?r?.relativeScores[id]:r?.relativeScore):(id?r?.scores[id]:r?.score);}
  function recompute(){
-   ranking=state.lastQuery?C.rank(state.books,state.lastQuery.vector,state.weights):state.books.slice().sort((a,b)=>a.title.localeCompare(b.title)).map(b=>({id:b.id,score:null,scores:{}}));
+   const all=entries();
+   ranking=state.lastQuery?C.rank(all,state.lastQuery.vector,state.weights):all.slice().sort((a,b)=>a.title.localeCompare(b.title)).map(b=>({id:b.id,score:null,scores:{}}));
    ranking=V.relativeRanking(ranking,C.FIELDS);
-   comparisonResults=state.comparison?V.compare(state.books,state.comparison.xVector,state.comparison.yVector,state.weights,C,state.scoreScale):[];
+   comparisonResults=state.comparison?V.compare(all,state.comparison.xVector,state.comparison.yVector,state.weights,C,state.scoreScale):[];
    renderResults();
  }
  function sortHeading(key,name,numeric=false){
@@ -914,21 +1177,30 @@ postMessage({type:'booted'});
  }
  function renderResults(){
    syncView();
-   const books=new Map(state.books.map(b=>[b.id,b])),category=currentCategory();
-   ranking=V.sortRanking(ranking,state.books,state.sort);
-   const filtered=filterRows(ranking),columns=C.FIELDS.filter(f=>state.books.some(b=>b.fields[f.id].text));
-   $('table-head').innerHTML='<tr><th scope="col">#</th>'+sortHeading('book','Book')+sortHeading('author','Author')+sortHeading('composite','Composite',true)+columns.map(f=>sortHeading(f.id,f.label,true)).join('')+'<th scope="col"><span class="offscreen">Actions</span></th></tr>';
-   $('results').innerHTML=filtered.map(r=>{
-     const b=books.get(r.id),rank=state.lastQuery&&r.score!==null?ranking.indexOf(r)+1:'—';
-     return '<tr data-book="'+esc(b.id)+'" tabindex="0" aria-label="'+esc(b.title)+'" class="'+(b.id===selectedId?'selected':'')+'"><td class="rank-cell">'+rank+'</td><td><div class="book-name">'+esc(b.title)+'</div>'+'</td><td class="author-cell">'+esc(b.author||'Author not recorded')+'</td><td class="score-cell main-score"><button class="score-trigger" data-composite title="Raw dot product: '+fmt(r.score)+'" aria-label="Composite '+fmt(displayScore(r))+', edit field contributions" aria-haspopup="dialog" aria-controls="composite-popover" aria-expanded="false">'+fmt(displayScore(r))+'</button>'+(r.score!==null?'<div class="meter"><span style="width:'+Math.max(0,Math.min(100,displayScore(r)*100))+'%"></span></div>':'')+'</td>'+columns.map(f=>'<td class="score-cell" title="Raw dot product: '+fmt(r.scores[f.id])+'">'+fmt(displayScore(r,f.id))+'</td>').join('')+'<td class="book-actions"><button class="small danger" data-delete-book="'+esc(b.id)+'" aria-label="Delete '+esc(b.title)+'" '+(busy?'disabled':'')+'>Delete</button></td></tr>';
-   }).join('')||'<tr><td colspan="20"><div class="empty-state">'+(state.books.length?'No books match this filter.':'Your library is empty. Import a catalog, add ISBNs, or add a PDF to begin.')+'</div></td></tr>';
+   const all=entries(),books=new Map(all.map(b=>[b.id,b])),category=currentCategory();
+   ranking=V.sortRanking(ranking,all,state.sort);
+   const filtered=filterRows(ranking),allowed=new Set(filtered.map(r=>books.get(r.id)?.parentId||r.id));
+   const parents=ranking.filter(r=>!books.get(r.id)?.parentId&&allowed.has(r.id));
+   const columns=C.FIELDS.filter(f=>all.some(b=>b.fields[f.id].text));
+   const chapterDropdown=b=>{
+     const children=filtered.filter(r=>books.get(r.id)?.parentId===b.id);
+     if(!b.chapters?.length)return '';
+     const open=expandedChapters.has(b.id)||b.chapters.some(c=>c.id===selectedId)||Boolean($('filter').value.trim());
+     const list=children.map(r=>{const c=books.get(r.id);return '<li><button type="button" data-select-chapter="'+esc(c.id)+'" class="chapter-entry '+(c.id===selectedId?'selected':'')+'"><span><strong>'+esc(c.title)+'</strong><small>'+esc(c.author||'Author not recorded')+'</small></span><span class="chapter-score" title="Chapter composite similarity">'+fmt(displayScore(r))+'</span></button></li>';}).join('');
+     return '<details class="chapter-dropdown" data-chapters="'+esc(b.id)+'" '+(open?'open':'')+'><summary>'+b.chapters.length+' chapter'+(b.chapters.length===1?'':'s')+'</summary><ol class="chapter-list">'+(list||'<li class="muted">No chapters match this filter.</li>')+'</ol></details>';
+   };
+   $('table-head').innerHTML='<tr><th scope="col">#</th>'+sortHeading('book','Book / chapters')+sortHeading('author','Author')+sortHeading('composite','Composite',true)+columns.map(f=>sortHeading(f.id,f.label,true)).join('')+'<th scope="col"><span class="offscreen">Actions</span></th></tr>';
+   $('results').innerHTML=parents.map((r,i)=>{
+     const b=books.get(r.id),rank=state.lastQuery&&r.score!==null?i+1:'—';
+     return '<tr data-book="'+esc(b.id)+'" tabindex="0" aria-label="'+esc(b.title)+'" class="'+(b.id===selectedId?'selected':'')+'"><td class="rank-cell">'+rank+'</td><td><div class="book-name">'+esc(b.title)+'</div>'+chapterDropdown(b)+'</td><td class="author-cell">'+esc(b.author||'Author not recorded')+'</td><td class="score-cell main-score"><button class="score-trigger" data-composite title="Raw dot product: '+fmt(r.score)+'" aria-label="Composite '+fmt(displayScore(r))+', edit field contributions" aria-haspopup="dialog" aria-controls="composite-popover" aria-expanded="false">'+fmt(displayScore(r))+'</button>'+(r.score!==null?'<div class="meter"><span style="width:'+Math.max(0,Math.min(100,displayScore(r)*100))+'%"></span></div>':'')+'</td>'+columns.map(f=>'<td class="score-cell" title="Raw dot product: '+fmt(r.scores[f.id])+'">'+fmt(displayScore(r,f.id))+'</td>').join('')+'<td class="book-actions"><button class="small danger" data-delete-book="'+esc(b.id)+'" aria-label="Delete '+esc(b.title)+'" '+(busy?'disabled':'')+'>Delete</button></td></tr>';
+   }).join('')||'<tr><td colspan="20"><div class="empty-state">'+(state.books.length?'No books or chapters match this filter.':'Your library is empty. Import a catalog, add ISBNs, or add a PDF to begin.')+'</div></td></tr>';
    const comparison=state.view==='comparison';
    $('results-heading').innerHTML=esc(category?category.name:'All books')+'<small>'+(comparison?(state.comparison?'X: '+esc(state.comparison.xQuery)+' · Y: '+esc(state.comparison.yQuery):'Enter two independent queries to compare'):(state.lastQuery?'Ranked for “'+esc(state.lastQuery.query.slice(0,100))+'”':'Catalog order · not ranked'))+'</small>';
    const scored=ranking.filter(r=>r.score!==null).length;
-   $('result-count').textContent=filtered.length.toLocaleString()+' of '+state.books.length.toLocaleString()+' books'+(state.lastQuery?' · '+scored+' scored':'');
-   $('score-caption').textContent=(state.scoreScale==='relative'?'Relative similarity':'Raw dot products')+' · all records retained';
+   $('result-count').textContent=parents.length.toLocaleString()+' of '+state.books.length.toLocaleString()+' books · '+filtered.filter(r=>books.get(r.id)?.parentId).length+' chapters'+(state.lastQuery?' · '+scored+' entries scored':'');
+   $('score-caption').textContent=(state.scoreScale==='relative'?'Relative similarity':'Raw dot products')+' · chapters scored separately';
    $('csv-btn').disabled=comparison?!state.comparison:!state.lastQuery;
-   if(!selectedId||!books.has(selectedId))selectedId=filtered[0]?.id||state.books[0]?.id;
+   if(!selectedId||!books.has(selectedId))selectedId=parents[0]?.id||state.books[0]?.id;
    if(comparison)renderPlot();
    renderDetails();
  }
@@ -939,27 +1211,28 @@ postMessage({type:'booted'});
    const metric=(name,value,caption)=>'<div class="metric"><span>'+name+'</span><strong>'+(value===null?'Undefined':value.toFixed(4))+'</strong><small>'+caption+'</small></div>';
    $('comparison-metrics').innerHTML=metric('Embedding cosine',stats.cosine,'Normalized query dot product')+metric(scaleName+' regression slope',fit.slope,fit.intercept===null?'Needs 2+ paired books and X variance':'Y = '+fmt(fit.slope)+' X '+(fit.intercept<0?'− ':'+ ')+fmt(Math.abs(fit.intercept))+' · R² '+fmt(fit.r2)+' · '+stats.count+' paired books shown');
    const width=Math.max(320,$('plot').clientWidth||640),height=Math.max(360,Math.min(560,width*.77));
-   $('plot').innerHTML=V.plotSVG(points,state.books,{width,height,xLabel:q.xQuery,yLabel:q.yQuery,selectedId,fit});
+   $('plot').innerHTML=V.plotSVG(points,entries(),{width,height,xLabel:q.xQuery,yLabel:q.yQuery,selectedId,fit});
    $('scale-note').textContent=state.scoreScale==='relative'?'Relative scores use the full catalog: lowest = 0, highest = 1; tied ranges = 0.5. Filters retain that scale. The line and regression statistics use relative scores. Missing scores are excluded.':'Raw dot products use fixed 0–1 axes; negative values appear at 0. The line and regression statistics use unclipped raw scores. Missing scores are excluded.';
-   $('plot-count').textContent=stats.count.toLocaleString()+' plotted of '+points.length.toLocaleString()+' books shown · '+(points.length-stats.count).toLocaleString()+' without paired scores · '+state.books.length.toLocaleString()+' books in catalog';
+   $('plot-count').textContent=stats.count.toLocaleString()+' plotted of '+points.length.toLocaleString()+' book/chapter entries shown · '+(points.length-stats.count).toLocaleString()+' without paired scores · '+state.books.length.toLocaleString()+' books in catalog';
  }
  function renderDetails(){
-   const b=state.books.find(x=>x.id===selectedId);if(!b){$('details').innerHTML='<div class="empty-state">Select a book to inspect its fields.</div>';return;}
+   const b=findEntry(selectedId);if(!b){$('details').innerHTML='<div class="empty-state">Select a book to inspect its fields.</div>';return;}
    const comparison=state.view==='comparison',p=comparisonResults.find(x=>x.id===b.id),r=comparison?null:ranking.find(x=>x.id===b.id),cat=currentCategory();
-   const present=C.FIELDS.filter(f=>b.fields[f.id].text).length;
+   const present=C.FIELDS.filter(f=>b.fields[f.id].text).length,parent=findEntry(b.parentId);
+   const parentLink=parent?'<button class="small quiet" data-parent-book="'+esc(parent.id)+'">← '+esc(parent.title)+'</button>':'';
    const scores=comparison&&state.comparison?'<div class="axis-scores"><div>X composite<strong>'+fmt(state.scoreScale==='relative'?p?.relX:p?.rawX)+'</strong><span>'+esc(state.comparison.xQuery)+'</span></div><div>Y composite<strong>'+fmt(state.scoreScale==='relative'?p?.relY:p?.rawY)+'</strong><span>'+esc(state.comparison.yQuery)+'</span></div></div>':'';
-   $('details').innerHTML='<div class="detail-top"><div class="eyebrow">'+(comparison?'Two-query details':state.lastQuery?'Similarity details':'Book information')+'</div><h2>'+esc(b.title)+'</h2><div class="detail-author">'+esc(b.author)+'</div><div class="detail-meta">Book ID '+esc(b.id)+(b.year?' · '+esc(b.year):'')+'</div><div class="coverage-grid">'+C.FIELDS.map(f=>'<span class="coverage-cell '+(C.ready(b.fields[f.id])?'ready':b.fields[f.id].text?'present':'')+'" title="'+f.label+'"></span>').join('')+'</div><div class="subcount">'+present+' / '+C.FIELDS.length+' fields populated</div></div><div class="detail-body">'+scores+
+   $('details').innerHTML='<div class="detail-top">'+parentLink+'<div class="eyebrow">'+(b.parentId?'Chapter · ':'')+(comparison?'Two-query details':state.lastQuery?'Similarity details':'Book information')+'</div><h2>'+esc(b.title)+'</h2><div class="detail-author">'+esc(b.author)+'</div><div class="detail-meta">Book ID '+esc(b.id)+(b.year?' · '+esc(b.year):'')+'</div><div class="coverage-grid">'+C.FIELDS.map(f=>'<span class="coverage-cell '+(C.ready(b.fields[f.id])?'ready':b.fields[f.id].text?'present':'')+'" title="'+f.label+'"></span>').join('')+'</div><div class="subcount">'+present+' / '+C.FIELDS.length+' fields populated</div></div><div class="detail-body">'+scores+
     C.FIELDS.map(f=>{const d=b.fields[f.id];return '<div class="field-detail"><div class="field-line"><span>'+f.label+'</span><strong>'+(comparison?'raw X '+fmt(p?.scoresX[f.id])+' · Y '+fmt(p?.scoresY[f.id]):fmt(displayScore(r,f.id)))+'</strong></div><div class="field-state">'+(!d.text?'No text · embedding empty':C.ready(d)?d.chunks.length+' chunk'+(d.chunks.length===1?'':'s')+' · indexed':'Text available · awaiting embedding')+'</div>'+(d.text?'<details><summary>View text and source</summary><div class="field-text">'+esc(d.text)+'</div><div class="field-state" style="margin-top:7px">'+esc(d.source)+'</div></details>':'')+'</div>';}).join('')+
     '<p class="score-note">Missing fields are excluded from the composite. Raw similarities are not probabilities.</p>'+
     (b.rawSummary?'<details style="font-size:11px;margin-top:12px"><summary>Original catalog citation</summary><div class="field-text">'+esc(b.rawSummary)+'</div><div class="field-state">'+esc(b.summaryNote||'Original export value')+'</div></details>':'')+
     (cat?'<label class="membership"><input id="member-checkbox" type="checkbox" '+(cat.members.includes(b.id)?'checked':'')+'>Assign to '+esc(cat.name)+'</label>':'')+
-    '<div class="detail-actions"><button class="small danger" data-delete-book="'+esc(b.id)+'" '+(busy?'disabled':'')+'>Delete book</button><button class="small" data-material="'+esc(b.id)+'" '+(busy?'disabled':'')+'>Add source</button><button class="small" data-edit="'+esc(b.id)+'" '+(busy?'disabled':'')+'>Edit fields</button><button class="small" data-category-new="true">Save topic as category</button></div></div>';
+    '<div class="detail-actions">'+(!b.parentId?'<button class="small" data-chapter-add="'+esc(b.id)+'" '+(busy?'disabled':'')+'>Add chapter</button>':'')+'<button class="small danger" data-delete-book="'+esc(b.id)+'" '+(busy?'disabled':'')+'>'+ (b.parentId?'Delete chapter':'Delete book')+'</button><button class="small" data-material="'+esc(b.id)+'" '+(busy?'disabled':'')+'>Add source</button><button class="small" data-edit="'+esc(b.id)+'" '+(busy?'disabled':'')+'>Edit fields</button><button class="small" data-category-new="true">Save topic as category</button></div></div>';
  }
  async function compareQueries(){
    if(busy)return;
    const xQuery=$('query-x').value.trim(),yQuery=$('query-y').value.trim();
    if(!xQuery||!yQuery){notice('Enter a separate query for each axis.');return;}
-   if(!state.books.some(b=>C.FIELDS.some(f=>state.weights[f.id]>0&&C.ready(b.fields[f.id])))){notice('Build embeddings for at least one active field before comparing queries.');return;}
+   if(!entries().some(b=>C.FIELDS.some(f=>state.weights[f.id]>0&&C.ready(b.fields[f.id])))){notice('Build embeddings for at least one active field before comparing queries.');return;}
    setBusy('comparison');notice('');
    try{
      const queries=[...new Set([xQuery,yQuery])],vectors=new Map();
@@ -983,7 +1256,7 @@ postMessage({type:'booted'});
  }
  function delayCloseComposite(){clearTimeout(popoverOpenTimer);clearTimeout(popoverCloseTimer);popoverCloseTimer=setTimeout(()=>{if(!$('composite-popover').matches(':hover')&&!$('composite-popover').contains(document.activeElement)&&!popoverAnchor?.matches(':hover'))hideComposite();},240);}
  function showPointTooltip(node,event){
-   const p=comparisonResults.find(p=>p.id===node.dataset.point),b=state.books.find(b=>b.id===node.dataset.point);if(!p||!b)return;
+   const p=comparisonResults.find(p=>p.id===node.dataset.point),b=findEntry(node.dataset.point);if(!p||!b)return;
    const tooltip=$('plot-tooltip'),q=state.comparison;tooltip.innerHTML='<strong>'+esc(b.title)+'</strong><div>'+esc(b.author)+'</div><div>X · '+esc(q.xQuery)+': '+fmt(state.scoreScale==='relative'?p.relX:p.rawX)+' (raw '+fmt(p.rawX)+')</div><div>Y · '+esc(q.yQuery)+': '+fmt(state.scoreScale==='relative'?p.relY:p.rawY)+' (raw '+fmt(p.rawY)+')</div>';tooltip.hidden=false;
    const rect=node.getBoundingClientRect(),x=event?.clientX??rect.right,y=event?.clientY??rect.top;
    tooltip.style.left=Math.max(10,Math.min(window.innerWidth-tooltip.offsetWidth-10,x+13))+'px';tooltip.style.top=Math.max(10,Math.min(window.innerHeight-tooltip.offsetHeight-10,y+13))+'px';
@@ -992,7 +1265,7 @@ postMessage({type:'booted'});
  async function buildIndex(){
    if(busy)return;notice('');stopRequested=false;setBusy('indexing');
    const pending=[],cache=new Map();
-   for(const b of state.books){
+   for(const b of entries()){
      for(const f of C.FIELDS){const d=b.fields[f.id];if(d.text&&!C.ready(d))pending.push({book:b,data:d,name:f.label});}
      for(const d of Object.values(b.fields))if(d.modelKey===C.MODEL_KEY)for(const p of d.chunks||[])if(C.validVector(p.vector))cache.set(p.text,[p]);
    }
@@ -1020,7 +1293,7 @@ postMessage({type:'booted'});
  async function search(){
    if(busy)return;
    const query=$('query').value.trim();if(!query){notice('Enter a topic or research question.');return;}
-   if(!state.books.some(b=>C.FIELDS.some(f=>state.weights[f.id]>0&&C.ready(b.fields[f.id])))){notice('Build embeddings first, and enable at least one populated search field.');return;}
+   if(!entries().some(b=>C.FIELDS.some(f=>state.weights[f.id]>0&&C.ready(b.fields[f.id])))){notice('Build embeddings first, and enable at least one populated search field.');return;}
    setBusy('search');notice('');
    try{
      let vector=state.queryCache[query]?.modelKey===C.MODEL_KEY?state.queryCache[query].vector:null;
@@ -1037,16 +1310,16 @@ postMessage({type:'booted'});
  function csvCell(value){let s=String(value??'');if(typeof value==='string'&&/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';}
  function exportRanking(){
    if(state.view==='comparison'){exportComparison();return;}if(!state.lastQuery)return;
-   const books=new Map(state.books.map(b=>[b.id,b]));
-   const head=['rank','book_id','title','author','query','display_scale','composite_raw','composite_relative',...C.FIELDS.map(f=>f.id+'_dot'),...C.FIELDS.map(f=>f.id+'_relative'),...C.FIELDS.map(f=>f.id+'_weight')];
-   const rows=ranking.map((r,i)=>{const b=books.get(r.id);return [r.score===null?'':i+1,b.id,b.title,b.author,state.lastQuery.query,state.scoreScale,r.score??'',r.relativeScore??'',...C.FIELDS.map(f=>r.scores[f.id]??''),...C.FIELDS.map(f=>r.relativeScores[f.id]??''),...C.FIELDS.map(f=>state.weights[f.id])];});
+   const books=new Map(entries().map(b=>[b.id,b]));
+   const head=['rank','book_id','parent_book_id','entry_type','title','author','query','display_scale','composite_raw','composite_relative',...C.FIELDS.map(f=>f.id+'_dot'),...C.FIELDS.map(f=>f.id+'_relative'),...C.FIELDS.map(f=>f.id+'_weight')];
+   const rows=ranking.map((r,i)=>{const b=books.get(r.id);return [r.score===null?'':i+1,b.id,b.parentId||'',b.parentId?'chapter':'book',b.title,b.author,state.lastQuery.query,state.scoreScale,r.score??'',r.relativeScore??'',...C.FIELDS.map(f=>r.scores[f.id]??''),...C.FIELDS.map(f=>r.relativeScores[f.id]??''),...C.FIELDS.map(f=>state.weights[f.id])];});
    download('library_ranking.csv','\uFEFF'+[head,...rows].map(row=>row.map(csvCell).join(',')).join('\r\n'),'text/csv;charset=utf-8');toast('Exported the complete ranking, including filtered-out books.');
  }
  function exportComparison(){
    if(!state.comparison)return;
-   const q=state.comparison,books=new Map(state.books.map(b=>[b.id,b])),stats=V.statistics(comparisonResults,q.xVector,q.yVector,C,state.scoreScale),fit=stats.regression;
-   const head=['book_id','title','author','x_query','y_query','display_scale','x_composite_raw','y_composite_raw','x_relative','y_relative','x_plot','y_plot','query_embedding_cosine','all_book_regression_scale','all_book_regression_slope','all_book_regression_intercept','all_book_regression_r2',...C.FIELDS.flatMap(f=>[f.id+'_x_dot',f.id+'_y_dot',f.id+'_weight'])];
-   const rows=comparisonResults.map(p=>{const b=books.get(p.id);return [b.id,b.title,b.author,q.xQuery,q.yQuery,state.scoreScale,p.rawX??'',p.rawY??'',p.relX??'',p.relY??'',p.x??'',p.y??'',stats.cosine,state.scoreScale,fit.slope??'',fit.intercept??'',fit.r2??'',...C.FIELDS.flatMap(f=>[p.scoresX[f.id]??'',p.scoresY[f.id]??'',state.weights[f.id]])];});
+   const q=state.comparison,books=new Map(entries().map(b=>[b.id,b])),stats=V.statistics(comparisonResults,q.xVector,q.yVector,C,state.scoreScale),fit=stats.regression;
+   const head=['book_id','parent_book_id','entry_type','title','author','x_query','y_query','display_scale','x_composite_raw','y_composite_raw','x_relative','y_relative','x_plot','y_plot','query_embedding_cosine','all_book_regression_scale','all_book_regression_slope','all_book_regression_intercept','all_book_regression_r2',...C.FIELDS.flatMap(f=>[f.id+'_x_dot',f.id+'_y_dot',f.id+'_weight'])];
+   const rows=comparisonResults.map(p=>{const b=books.get(p.id);return [b.id,b.parentId||'',b.parentId?'chapter':'book',b.title,b.author,q.xQuery,q.yQuery,state.scoreScale,p.rawX??'',p.rawY??'',p.relX??'',p.relY??'',p.x??'',p.y??'',stats.cosine,state.scoreScale,fit.slope??'',fit.intercept??'',fit.r2??'',...C.FIELDS.flatMap(f=>[p.scoresX[f.id]??'',p.scoresY[f.id]??'',state.weights[f.id]])];});
    download('library_comparison.csv','\uFEFF'+[head,...rows].map(row=>row.map(csvCell).join(',')).join('\r\n'),'text/csv;charset=utf-8');toast('Exported all books and comparison scores, including filtered-out books.');
  }
  function saveApplet(){
@@ -1101,36 +1374,59 @@ postMessage({type:'booted'});
    if(!parsed.valid.length){$('isbn-validation').textContent='Enter at least one valid ISBN-10 or ISBN-13.';return;}
    if(parsed.valid.length>1500){$('isbn-validation').textContent='Please import no more than 1,500 ISBNs in one run.';return;}
    notice('');setBusy('lookup');isbnController=new AbortController();
-   for(const id of ['isbn-fetch','isbn-load-list','isbn-use-catalog','isbn-input','isbn-refresh'])$(id).disabled=true;
+   for(const id of ['isbn-fetch','isbn-load-list','isbn-use-catalog','isbn-input','isbn-refresh','isbn-enrich','isbn-source-settings'])$(id).disabled=true;
    $('isbn-stop').hidden=false;$('isbn-progress').hidden=false;$('isbn-progress').value=0;
    state.isbnReport=parsed.valid.map(isbn=>({isbn,status:'pending',filled:0}));
    const initial=I.mergeLookups(state.books,parsed.valid.map(isbn=>({isbn,status:'pending'})),C);state.books=initial.books;
-   const added=initial.added,client=new I.LookupClient({cache:state.isbnCache});let completed=0,filled=0,stopped=false;
+   const added=initial.added,client=new I.LookupClient({cache:state.isbnCache}),sourceClient=new LibrarySources.Client(),sourceOptions=materials.lookupOptions();
+   const useExtras=$('isbn-enrich').checked&&Object.keys(sourceOptions).some(key=>key.endsWith('Enabled')&&sourceOptions[key]);let completed=0,filled=0,stopped=false;
    renderSidebar();recompute();renderISBNReport();await persist();
    try{
      for(let start=0;start<parsed.valid.length;start+=20){
        const batch=parsed.valid.slice(start,start+20);let records;
        try{records=await client.lookup(batch,{signal:isbnController.signal,force:$('isbn-refresh').checked});}
        catch(e){
-         if(e.name==='AbortError'){stopped=true;break;}
+         if(e.name==='AbortError'||isbnController.signal.aborted){stopped=true;break;}
          const cached=e.partialResults||[];
          records=[...cached,...batch.filter(isbn=>!cached.some(r=>r.isbn===isbn)).map(isbn=>({isbn,status:'error',error:e.message,checkedAt:new Date().toISOString()}))];
-         notice('ISBN lookup stopped. '+e.message+' Your existing text has been kept. The report shows which ISBNs need another attempt.',true);stopped=true;
+         notice('Open Library lookup failed. '+e.message+(useExtras?' Continuing with the other selected sources.':' The report shows which ISBNs need another attempt.'),true);stopped=!useExtras;
        }
        for(const record of records){
+         if(isbnController.signal.aborted){stopped=true;break;}
          const merged=I.mergeLookups(state.books,[record],C);state.books=merged.books;filled+=merged.filled;
          const report=state.isbnReport.find(x=>x.isbn===record.isbn);Object.assign(report,{status:record.status,title:record.title||'',filled:merged.filled,cached:Boolean(record.cached),note:record.error||record.warning||''});
+         if(useExtras){
+           try{
+             const data=await sourceClient.lookup(record.isbn,{...sourceOptions,signal:isbnController.signal,onProgress:name=>{$('isbn-validation').textContent='ISBN '+record.isbn+' · '+name;}});
+             const matchingBooks=state.books.filter(b=>I.bookISBNs(b).includes(record.isbn));
+             for(const book of matchingBooks){
+               const next={...data,fields:{...data.fields}};
+               const empty=C.FIELDS.filter(f=>next.fields[f.id]?.text&&!book.fields[f.id].text&&!book.fields[f.id].manual).map(f=>f.id);
+               for(const id of ['summary','bibliography','subjects']){
+                 const old=book.fields[id],added=next.fields[id];if(!old.text||old.manual||!added?.text||empty.includes(id)||old.text.includes(added.text))continue;
+                 const paragraphs=id==='summary',separator=paragraphs?'\n\n':'\n',split=paragraphs?/\n\s*\n/:/\n+/;
+                 const text=added.text.includes(old.text)?added.text:[...new Set([...old.text.split(split),...added.text.split(split)].map(s=>s.trim()).filter(Boolean))].join(separator);
+                 if(text!==old.text){next.fields[id]={...added,text,source:[old.source,added.source].filter(Boolean).join('; ')};empty.push(id);}
+               }
+               if(data.chapters?.length)empty.push('chapters');
+               if(empty.length){const count=LibrarySources.apply(book,next,empty,C,{manual:false});report.filled+=count;filled+=count;}
+               if(Object.keys(data.fields).length||data.chapters?.length){report.status='found';report.title=book.title;}
+             }
+             report.note=[report.note,...data.warnings||[]].filter(Boolean).join(' ');
+           }catch(error){if(isbnController.signal.aborted){stopped=true;break;}report.note=[report.note,error.message].filter(Boolean).join(' ');}
+           renderISBNReport();renderSidebar();recompute();await persist();
+         }
        }
        completed+=batch.length;$('isbn-progress').value=completed/parsed.valid.length*100;
-       $('isbn-validation').textContent=completed+' / '+parsed.valid.length+' ISBNs checked; '+filled+' empty fields filled.';
+       $('isbn-validation').textContent=completed+' / '+parsed.valid.length+' ISBNs checked; '+filled+' fields / chapters added or updated.';
        renderISBNReport();renderSidebar();recompute();await persist();if(stopped)break;
      }
    }finally{
      const pending=state.isbnReport.filter(r=>r.status==='pending');
      for(const report of pending){report.status='stopped';const merged=I.mergeLookups(state.books,[{isbn:report.isbn,status:'stopped'}],C);state.books=merged.books;}
      const found=state.isbnReport.filter(r=>r.status==='found').length;
-     $('isbn-validation').textContent=(stopped?'Lookup stopped. ':'Lookup complete. ')+added+' books added; '+found+' ISBNs matched; '+filled+' empty fields filled; '+(parsed.valid.length-found)+' unresolved.';
-     isbnController=null;for(const id of ['isbn-fetch','isbn-load-list','isbn-use-catalog','isbn-input','isbn-refresh'])$(id).disabled=false;
+     $('isbn-validation').textContent=(stopped?'Lookup stopped. ':'Lookup complete. ')+added+' books added; '+found+' ISBNs matched; '+filled+' fields / chapters added or updated; '+(parsed.valid.length-found)+' unresolved.';
+     isbnController=null;for(const id of ['isbn-fetch','isbn-load-list','isbn-use-catalog','isbn-input','isbn-refresh','isbn-enrich','isbn-source-settings'])$(id).disabled=false;
      $('isbn-stop').hidden=true;setBusy('');renderISBNReport();renderSidebar();recompute();await persist();
      if(filled)toast('Metadata saved. Build embeddings to include the new fields in search.');
    }
@@ -1138,6 +1434,7 @@ postMessage({type:'booted'});
  const materials=LibraryMaterials.create({$,C,I,P:LibraryPDF,S:LibrarySources,esc,getState:()=>state,isBusy:()=>Boolean(busy),setBusy,refresh:id=>{selectedId=id;renderSidebar();recompute();indexStatus();},save:persist,toast});
  $('pdf-btn').onclick=()=>materials.open();
  $('isbn-btn').onclick=showISBNDialog;
+ $('isbn-source-settings').onclick=()=>{$('isbn-dialog').close();materials.open();};
  $('isbn-input').oninput=isbnValidation;
  $('isbn-fetch').onclick=()=>lookupISBNs().catch(e=>notice('ISBN lookup failed. '+e.message,true));
  $('isbn-stop').onclick=()=>isbnController?.abort();
@@ -1174,17 +1471,31 @@ postMessage({type:'booted'});
  $('close-composite').onclick=hideComposite;
  window.addEventListener('resize',()=>{hideComposite();renderPlot();});
  if(typeof ResizeObserver!=='undefined'){let lastWidth=0;new ResizeObserver(entries=>{const width=Math.round(entries[0].contentRect.width);if(width&&width!==lastWidth){lastWidth=width;renderPlot();}}).observe($('plot'));}
- $('results').onclick=e=>{const remove=e.target.closest('[data-delete-book]');if(remove){askDelete(remove.dataset.deleteBook);return;}const row=e.target.closest('[data-book]');if(row){selectedId=row.dataset.book;document.querySelectorAll('[data-book]').forEach(r=>r.classList.toggle('selected',r.dataset.book===selectedId));renderDetails();}};
- $('results').onkeydown=e=>{if(e.target.closest('button'))return;if(e.key==='Enter'||e.key===' '){const row=e.target.closest('[data-book]');if(row){e.preventDefault();row.click();}}};
+ $('results').onclick=e=>{
+   const chapter=e.target.closest('[data-select-chapter]');
+   if(chapter){selectedId=chapter.dataset.selectChapter;document.querySelectorAll('[data-select-chapter]').forEach(b=>b.classList.toggle('selected',b.dataset.selectChapter===selectedId));document.querySelectorAll('[data-book]').forEach(r=>r.classList.remove('selected'));renderDetails();return;}
+   if(e.target.closest('.chapter-dropdown summary'))return;
+   const remove=e.target.closest('[data-delete-book]');if(remove){askDelete(remove.dataset.deleteBook);return;}
+   const row=e.target.closest('[data-book]');if(row){selectedId=row.dataset.book;document.querySelectorAll('[data-book]').forEach(r=>r.classList.toggle('selected',r.dataset.book===selectedId));document.querySelectorAll('[data-select-chapter]').forEach(b=>b.classList.remove('selected'));renderDetails();}
+ };
+ $('results').addEventListener('toggle',e=>{if(e.target.matches('.chapter-dropdown')){if(e.target.open)expandedChapters.add(e.target.dataset.chapters);else expandedChapters.delete(e.target.dataset.chapters);}},true);
+ $('results').onkeydown=e=>{if(e.target.closest('button,summary'))return;if(e.key==='Enter'||e.key===' '){const row=e.target.closest('[data-book]');if(row){e.preventDefault();row.click();}}};
  $('categories').onclick=e=>{const button=e.target.closest('[data-category]');if(!button||busy)return;state.view='ranking';state.activeCategory=button.dataset.category;const c=currentCategory();state.weights={...c.weights};$('query').value=c.query;$('assigned-only').checked=false;renderSidebar();search();saveSoon();};
  $('all-books').onclick=()=>{state.activeCategory=null;$('assigned-only').checked=false;renderSidebar();renderResults();saveSoon();};
  $('assigned-only').onchange=renderResults;
  $('category-add').onclick=newCategory;
  $('category-form').onsubmit=e=>{e.preventDefault();const query=$('category-query').value.trim(),name=$('category-name').value.trim();if(!query||!name)return;state.categories.push({id:'category-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7),name,query,weights:{...state.weights},members:[]});state.view='ranking';state.activeCategory=state.categories.at(-1).id;$('category-dialog').close();$('query').value=query;renderSidebar();renderResults();saveSoon();search();};
- $('details').onclick=e=>{const remove=e.target.closest('[data-delete-book]');if(remove){askDelete(remove.dataset.deleteBook);return;}const source=e.target.closest('[data-material]');if(source)materials.open(source.dataset.material);if(e.target.closest('[data-category-new]'))newCategory();if(e.target.closest('[data-edit]')&&!busy){const b=state.books.find(b=>b.id===selectedId);$('edit-book-title').textContent=b.title;$('edit-field').innerHTML=C.FIELDS.map(f=>'<option value="'+f.id+'">'+f.label+'</option>').join('');$('edit-field').value='summary';$('edit-text').value=b.fields.summary.text;$('edit-dialog').showModal();}};
+ $('details').onclick=e=>{const parent=e.target.closest('[data-parent-book]');if(parent){selectedId=parent.dataset.parentBook;renderResults();return;}const chapter=e.target.closest('[data-chapter-add]');if(chapter&&!busy){$('chapter-parent').value=chapter.dataset.chapterAdd;$('chapter-form').reset();$('chapter-parent').value=chapter.dataset.chapterAdd;$('chapter-dialog').showModal();return;}const remove=e.target.closest('[data-delete-book]');if(remove){askDelete(remove.dataset.deleteBook);return;}const source=e.target.closest('[data-material]');if(source)materials.open(source.dataset.material);if(e.target.closest('[data-category-new]'))newCategory();if(e.target.closest('[data-edit]')&&!busy){const b=findEntry(selectedId);$('edit-book-title').textContent=b.title;$('edit-field').innerHTML=C.FIELDS.map(f=>'<option value="'+f.id+'">'+f.label+'</option>').join('');$('edit-field').value='summary';$('edit-text').value=b.fields.summary.text;$('edit-dialog').showModal();}};
  $('details').onchange=e=>{if(e.target.id==='member-checkbox'){const c=currentCategory();if(!c)return;c.members=c.members.filter(id=>id!==selectedId);if(e.target.checked)c.members.push(selectedId);renderSidebar();if($('assigned-only').checked)renderResults();saveSoon();}};
- $('edit-field').onchange=()=>{$('edit-text').value=state.books.find(b=>b.id===selectedId).fields[$('edit-field').value].text;};
- $('edit-form').onsubmit=e=>{e.preventDefault();const b=state.books.find(b=>b.id===selectedId),field=$('edit-field').value,text=$('edit-text').value.trim();if(field==='title'&&!text){notice('A book title cannot be empty.');return;}b.fields[field]={...C.emptyField(),text,source:text?'Manual entry':'',manual:true};if(field==='title')b.title=text;$('edit-dialog').close();renderSidebar();recompute();indexStatus();saveSoon();toast('Field saved. Rebuild embeddings to index the change.');};
+ $('edit-field').onchange=()=>{$('edit-text').value=findEntry(selectedId).fields[$('edit-field').value].text;};
+ $('edit-form').onsubmit=e=>{e.preventDefault();const b=findEntry(selectedId),field=$('edit-field').value,text=$('edit-text').value.trim();if(field==='title'&&!text){notice('A book title cannot be empty.');return;}b.fields[field]={...C.emptyField(),text,source:text?'Manual entry':'',manual:true};if(field==='title')b.title=text;$('edit-dialog').close();renderSidebar();recompute();indexStatus();saveSoon();toast('Field saved. Rebuild embeddings to index the change.');};
+ $('chapter-form').onsubmit=e=>{
+   e.preventDefault();if(busy)return;const parent=state.books.find(b=>b.id===$('chapter-parent').value),title=$('chapter-title').value.trim();if(!parent||!title)return;
+   const chapter=C.makeChapter(parent,{title,author:$('chapter-author').value.trim(),fields:{summary:{text:$('chapter-summary').value.trim(),source:'Manual chapter entry',manual:true},bibliography:{text:$('chapter-bibliography').value.trim(),source:'Manual chapter entry',manual:true},full_text:{text:$('chapter-text').value.trim(),source:'Manual chapter entry',manual:true}}},(parent.chapters||[]).length);
+   if(!chapter){notice('Use the chapter title rather than a section heading such as References or Contents.');return;}
+   if((parent.chapters||[]).some(c=>c.id===chapter.id)){notice('A chapter with this title is already present. Select it to edit its fields.');return;}
+   parent.chapters=parent.chapters||[];parent.chapters.push(chapter);selectedId=chapter.id;expandedChapters.add(parent.id);$('chapter-dialog').close();renderSidebar();recompute();indexStatus();saveSoon();toast('Chapter added. Build embeddings to index it.');
+ };
  $('import-btn').onclick=()=>$('file-input').click();$('file-input').onchange=()=>importFile($('file-input').files[0]);
  $('backup-btn').onclick=()=>download('library_search_backup.json',JSON.stringify(snapshot()),'application/json');
  $('save-applet-btn').onclick=saveApplet;$('csv-btn').onclick=exportRanking;
