@@ -275,6 +275,99 @@ test('credentials required by selected providers are reported without echoing su
   assert.doesNotMatch(JSON.stringify(result),new RegExp(secret));
 });
 
+test('local relay transport sends upstream credentials only inside its POST body', async () => {
+  const calls=[],secret='relay-session-secret',upstream='https://api.dp.la/v2/items?api_key='+secret;
+  const expected={docs:[],count:0};
+  const client=new S.Client({relayURL:'/api/library-fetch',interval:0,sleep:async()=>{},fetchImpl:async(url,options)=>{
+    calls.push({url:String(url),options});
+    return {ok:true,status:200,headers:new Map(),json:async()=>expected,text:async()=>JSON.stringify(expected)};
+  }});
+  assert.deepEqual(plain(await client.get(upstream,null,false,{'X-Api-Key':secret})),expected);
+  assert.equal(calls.length,1);
+  assert.equal(calls[0].url,'/api/library-fetch');
+  assert.equal(calls[0].options.method,'POST');
+  const payload=JSON.parse(calls[0].options.body);
+  assert.equal(payload.url,upstream);
+  assert.equal(payload.headers['X-Api-Key'],secret);
+  assert.doesNotMatch(calls[0].url,new RegExp(secret));
+  assert.equal(calls[0].options.headers['X-Api-Key'],undefined,'Upstream API credentials must not be headers on the local relay request.');
+  assert.equal(calls[0].options.credentials,'omit');
+});
+
+test('relay auto-detection is limited to the loopback HTTP app', async () => {
+  const cases=[
+    {href:'http://127.0.0.1:8765/library_semantic_search.html',relay:true},
+    {href:'http://localhost:8765/library_semantic_search.html',relay:true},
+    {href:'https://andrewsolberg.github.io/library_semantic_search.html',relay:false},
+    {href:'file:///C:/Library/library_semantic_search.html',relay:false}
+  ];
+  for(const {href,relay} of cases){
+    const url=new URL(href),calls=[];
+    const location={href:url.href,protocol:url.protocol,hostname:url.hostname,host:url.host,origin:url.origin,pathname:url.pathname};
+    const Local=load('sources',{LibraryCore:C,LibraryISBN:I,location});
+    const client=new Local.Client({interval:0,sleep:async()=>{},fetchImpl:async(url,options)=>{
+      calls.push({url:String(url),options});
+      return {ok:true,status:200,headers:new Map(),json:async()=>String(url).endsWith('/api/library-health')?{service:'library-search',version:1}:{message:{items:[]}}};
+    }});
+    await client.get('https://api.crossref.org/works?filter=isbn:'+ISBN);
+    assert.equal(calls.length,relay?2:1);
+    const request=calls.at(-1);
+    assert.equal(request.options.method==='POST',relay,href+' should select the appropriate transport.');
+    assert.equal(new URL(request.url,href.startsWith('file:')?'http://example.org/':href).pathname,relay?'/api/library-fetch':'/works');
+  }
+});
+
+test('ordinary loopback static servers keep direct requests and cache the helper discovery result', async () => {
+  const calls=[];
+  const location={href:'http://localhost:8765/library_semantic_search.html',protocol:'http:',hostname:'localhost',host:'localhost:8765',origin:'http://localhost:8765',pathname:'/library_semantic_search.html'};
+  const Local=load('sources',{LibraryCore:C,LibraryISBN:I,location});
+  const client=new Local.Client({interval:0,sleep:async()=>{},fetchImpl:async(url,options)=>{
+    calls.push({url:String(url),options});
+    if(String(url).endsWith('/api/library-health'))return {ok:false,status:404,headers:new Map(),json:async()=>({error:'Not found'})};
+    return {ok:true,status:200,headers:new Map(),json:async()=>({message:{items:[]}})};
+  }});
+  await client.get('https://api.crossref.org/works?filter=isbn:'+ISBN);
+  await client.get('https://api.crossref.org/works?filter=isbn:'+OTHER);
+  assert.equal(calls.filter(call=>call.url.endsWith('/api/library-health')).length,1);
+  const upstream=calls.filter(call=>call.url.startsWith('https://api.crossref.org/'));
+  assert.equal(upstream.length,2);
+  assert.ok(upstream.every(call=>call.options.method!=='POST'));
+});
+
+test('local helper connection failures are distinct from repository no-match results', async () => {
+  const client=new S.Client({relayURL:'/api/library-fetch',interval:0,sleep:async()=>{},fetchImpl:async()=>{throw new TypeError('Failed to fetch');}});
+  await assert.rejects(client.get('https://api.crossref.org/works'),/local(?: metadata)? (?:helper|server)|Library Search.*(?:helper|server)/i);
+});
+
+test('lookup status distinguishes matched, unmatched, and failed providers', async () => {
+  const client=new S.Client({interval:0,sleep:async()=>{},fetchImpl:async url=>{
+    const target=String(url);
+    if(target.includes('archive.org/advancedsearch'))return {ok:true,headers:new Map(),json:async()=>({response:{docs:[]}})};
+    if(target.includes('hathitrust'))return {ok:true,headers:new Map(),json:async()=>({records:{record:{recordURL:'https://catalog.hathitrust.org/Record/1',titles:['Matched book'],isbns:[ISBN]}}})};
+    throw Error('Fixture repository connection failed');
+  }});
+  const result=await client.lookup(ISBN,{I,archiveEnabled:true,locEnabled:true,hathiEnabled:true});
+  assert.ok(Array.isArray(result.statuses));
+  const statuses=new Map(result.statuses.map(status=>[status.source,status.status]));
+  assert.equal(statuses.get('Internet Archive'),'not_found');
+  assert.equal(statuses.get('Library of Congress'),'error');
+  assert.equal(statuses.get('HathiTrust'),'matched');
+  assert.match(result.fields.title.text,/Matched book/);
+});
+
+test('aborting relay transport cancels its pending local request', async () => {
+  const controller=new AbortController();let requestSignal;
+  const client=new S.Client({relayURL:'/api/library-fetch',interval:0,sleep:async()=>{},fetchImpl:async(url,options)=>{
+    requestSignal=options.signal;
+    return new Promise((resolve,reject)=>options.signal.addEventListener('abort',()=>{const error=Error('Aborted relay request');error.name='AbortError';reject(error);},{once:true}));
+  }});
+  const pending=client.get('https://api.crossref.org/works',controller.signal);
+  await new Promise(resolve=>setTimeout(resolve,0));
+  controller.abort();
+  await assert.rejects(pending,/stop|abort/i);
+  assert.equal(requestSignal.aborted,true);
+});
+
 test('OAPEN and DOAB metadata preserve abstracts, contents and cited references with exact ISBN matching', () => {
   const data=[{handle:'20.500.12657/example',metadata:[
     {key:'dc.identifier.isbn',value:ISBN},
@@ -325,6 +418,17 @@ test('MARC catalog mapping extracts summary, contents and subjects while rejecti
     assert.equal(proposal.fields.contents,undefined);
     assert.ok(!proposal.fields.bibliography?.text,'A note saying references exist is not a list of cited sources.');
     assert.equal(X.marc(xml,OTHER,I,{provider:'Library of Congress',url:'https://catalog.loc.gov/example'}),null);
+    const empty='<searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/"><numberOfRecords>0</numberOfRecords></searchRetrieveResponse>';
+    assert.equal(X.marc(empty,ISBN,I),null,'A valid zero-record search is an ordinary no-match result.');
+    const diagnostic='<searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/"><numberOfRecords>0</numberOfRecords><diagnostics><diagnostic xmlns="http://www.loc.gov/zing/srw/diagnostic/"><uri>info:srw/diagnostic/1/16</uri><message>Unsupported index</message><details>bath.isbn</details></diagnostic></diagnostics></searchRetrieveResponse>';
+    assert.throws(()=>X.marc(diagnostic,ISBN,I),/Unsupported index|bath\.isbn|SRU.*16/i,'SRU query errors must not be reported as missing books.');
+    assert.throws(()=>X.marc('<html><body>Repository sign-in page</body></html>',ISBN,I),/HTML page instead of metadata/i,'A login or error page is a failed lookup, not a missing book.');
+    const wrongFormat='<searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/"><numberOfRecords>1</numberOfRecords><records><record><recordData><title>Wrong response format</title></recordData></record></records></searchRetrieveResponse>';
+    assert.throws(()=>X.marc(wrongFormat,ISBN,I),/unsupported format/i,'A reported catalog hit must not silently disappear when its schema is unsupported.');
+    const hathi={records:{record:{recordURL:'https://catalog.hathitrust.org/Record/12345',isbns:[],titles:['Collected research'],'marc-xml':xml}}};
+    assert.ok(X.hathi(hathi,ISBN,I),'Full MARC ISBNs should verify HathiTrust records with an empty ISBN summary array.');
+    hathi.records.record.isbns=[OTHER];
+    assert.equal(X.hathi(hathi,ISBN,I),null,'An explicitly mismatched HathiTrust ISBN list must remain rejected.');
   } finally {await window.happyDOM.close();}
 });
 
@@ -438,6 +542,62 @@ test('results expose independent chapter details, edits, filters, comparison, an
     assert.ok(path.resolve(temp).startsWith(tempRoot),'Cleanup target must remain inside the temporary directory.');
     fs.rmSync(temp,{recursive:true,force:true});
   }
+});
+
+test('metadata review separates source misses from failed queries and reports the local connection mode', async t => {
+  if(process.env.LIBRARY_TEST_MODULE_DIR)return t.skip('UI checks use the assembled distributable HTML.');
+  const skill=process.env.LIBRARY_TEST_SKILL_DIR || path.join(os.homedir(),'.codex','skills','local-web-testing');
+  const harnessFile=path.join(skill,'scripts','harness.mjs');
+  if(!fs.existsSync(harnessFile))return t.skip('Install the local-web-testing skill or set LIBRARY_TEST_SKILL_DIR to exercise the interface.');
+  const {createHarness}=await import(pathToFileURL(harnessFile).href);
+  let h;
+  try{
+    h=await createHarness({target:path.join(root,'library_semantic_search.html')});
+    let connection={mode:'browser',message:'Direct browser access fixture.'};
+    h.window.LibrarySources.connection=async()=>connection;
+    const responses=[
+      {fields:{title:{text:'A matched research book',source:'HathiTrust fixture'}},chapters:[],sources:[],warnings:['Library of Congress: fixture query failed.'],statuses:[
+        {source:'HathiTrust',status:'matched',message:'1 field available.',fields:1,chapters:0},
+        {source:'Crossref',status:'not_found',message:'No record with this edition’s ISBN was returned.',fields:0,chapters:0},
+        {source:'Library of Congress',status:'error',message:'Fixture query failed.',fields:0,chapters:0}
+      ]},
+      {fields:{},chapters:[],sources:[],warnings:[],statuses:[{source:'HathiTrust',status:'not_found',message:'No record with this edition’s ISBN was returned.',fields:0,chapters:0}]}
+    ];
+    h.window.LibrarySources.Client=class{async lookup(){assert.ok(responses.length,'Unexpected fixture lookup');return responses.shift();}};
+    h.click('#pdf-btn');
+    await new Promise(resolve=>setTimeout(resolve,0));
+    assert.equal(h.$('#material-connection').dataset.mode,'browser');
+    assert.match(h.$('#material-connection').textContent,/Direct browser/);
+    assert.equal(h.$('#material-helper-help').hidden,false);
+    h.$('#material-isbn').value=ISBN;
+    h.click('#material-lookup');
+    for(let attempt=0;attempt<100&&!h.$('#material-stop').hidden;attempt++)await new Promise(resolve=>setTimeout(resolve,2));
+    assert.match(h.$('#material-results .source-matched').textContent,/HathiTrust.*Matched/);
+    assert.match(h.$('#material-results .source-not_found').textContent,/Crossref.*No edition match/);
+    assert.match(h.$('#material-results .source-error').textContent,/Library of Congress.*Could not query/);
+    assert.ok(!h.$('#material-results .source-not_found').classList.contains('source-error'));
+    assert.equal(h.$('#material-status').classList.contains('error'),false,'Ordinary edition misses must not become a failed-request banner.');
+    assert.equal(h.$('#material-apply').disabled,false,'Returned text must be available for review and application.');
+    h.click('#material-lookup');
+    for(let attempt=0;attempt<100&&!h.$('#material-stop').hidden;attempt++)await new Promise(resolve=>setTimeout(resolve,2));
+    assert.match(h.$('#material-results').textContent,/No edition match/);
+    assert.equal(h.$('#material-results .source-error'),null);
+    assert.equal(h.$('#material-status').classList.contains('error'),false);
+    assert.equal(h.$('#material-apply').disabled,true,'An empty completed lookup must keep Apply disabled.');
+    h.click('[data-close="material-dialog"]');
+    connection={mode:'local',message:'Local metadata helper connected fixture.'};
+    h.click('#pdf-btn');
+    await new Promise(resolve=>setTimeout(resolve,0));
+    assert.equal(h.$('#material-connection').dataset.mode,'local');
+    assert.equal(h.$('#material-helper-help').hidden,true);
+    h.click('[data-close="material-dialog"]');
+    h.click('#isbn-btn');
+    await new Promise(resolve=>setTimeout(resolve,0));
+    assert.equal(h.$('#isbn-connection').dataset.mode,'local');
+    assert.match(h.$('#isbn-connection').textContent,/Local metadata helper/);
+    assert.deepEqual(h.errors,[]);
+    assert.equal(h.blockedRequests.length,0);
+  }finally{if(h)await h.close();}
 });
 
 test('bulk enrichment reaches every ISBN after Open Library failure and enriches duplicate catalog copies', async t => {
